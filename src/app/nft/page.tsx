@@ -1,9 +1,9 @@
-import TokenApp from '@/components/Landing'
+import NFTPage from '@/components/Nft'
 
 export default function Home() {
   return (
     <div>
-      <TokenApp />
+      <NFTPage />
     </div>
   );
 }

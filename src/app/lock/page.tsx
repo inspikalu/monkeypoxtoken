@@ -1,9 +1,9 @@
-import TokenApp from '@/components/Landing'
+import LockPage from '@/components/Lock'
 
 export default function Home() {
   return (
     <div>
-      <TokenApp />
+      <LockPage />
     </div>
   );
 }

@@ -1,9 +1,9 @@
-import TokenApp from '@/components/Landing'
+import SwapPage from '@/components/Swap'
 
 export default function Home() {
   return (
     <div>
-      <TokenApp />
+      <SwapPage />
     </div>
   );
 }

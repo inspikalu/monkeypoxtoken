@@ -1,9 +1,9 @@
-import TokenApp from '@/components/Landing'
+import RoadmapPage from '@/components/Roadmap'
 
 export default function Home() {
   return (
     <div>
-      <TokenApp />
+      <RoadmapPage />
     </div>
   );
 }
