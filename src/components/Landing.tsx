@@ -17,9 +17,8 @@ import SwapPage from './Swap';
 import RoadmapPage from './Roadmap';
 import Footer from './Footer';
 import Page from './Page';
-import LockPage from './Lock'
+import LockPage from './Lock';
 
-// Types and Interfaces
 interface NavItem {
   id: PageId;
   label: string;
@@ -38,21 +37,16 @@ interface MousePosition {
   y: number;
 }
 
-// Create context with default values
 const NavigationContext = React.createContext<NavigationContextType>({
   currentPage: 'home',
   setCurrentPage: () => {},
 });
-
-// Page component with proper typing
-
 
 const TokenApp: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<PageId>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
 
-  // Handle mouse movement for gradient effect
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent): void => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -62,7 +56,6 @@ const TokenApp: React.FC = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       const target = e.target as HTMLElement;
@@ -89,8 +82,9 @@ const TokenApp: React.FC = () => {
 
   return (
     <NavigationContext.Provider value={{ currentPage, setCurrentPage }}>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#111827] to-gray-900">
-        {/* Animated background elements */}
+      <div className={`min-h-screen bg-gradient-to-br from-gray-900 via-[#111827] to-gray-900 ${
+        isMobileMenuOpen ? 'overflow-hidden' : ''
+      }`}>
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div 
             className="absolute inset-0 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(250,204,21,0.15),transparent_50%)]"
@@ -125,7 +119,6 @@ const TokenApp: React.FC = () => {
           ))}
         </div>
 
-        {/* Navigation */}
         <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
@@ -141,7 +134,6 @@ const TokenApp: React.FC = () => {
                 </motion.div>
               </div>
 
-              {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
                 {navItems.map(({ id, label }) => (
                   <motion.button
@@ -160,7 +152,6 @@ const TokenApp: React.FC = () => {
                 ))}
               </div>
 
-              {/* Mobile menu button */}
               <div className="md:hidden">
                 <motion.button
                   whileTap={{ scale: 0.95 }}
@@ -173,45 +164,53 @@ const TokenApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Navigation */}
           <AnimatePresence>
             {isMobileMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, x: -100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                className="mobile-menu md:hidden fixed inset-y-0 left-0 w-64 bg-gray-900/95 backdrop-blur-lg shadow-lg"
-              >
-                <div className="pt-20 px-4">
-                  {navItems.map(({ id, label, icon: Icon }) => (
-                    <motion.button
-                      key={id}
-                      whileHover={{ x: 10 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg mb-2 ${
-                        currentPage === id
-                          ? 'bg-yellow-400/20 text-yellow-400'
-                          : 'text-gray-300 hover:text-yellow-400'
-                      }`}
-                      onClick={() => {
-                        setCurrentPage(id);
-                        setIsMobileMenuOpen(false);
-                      }}
-                    >
-                      <Icon />
-                      <span>{label}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                />
+                
+                <motion.div
+                  initial={{ opacity: 0, x: -100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  className="mobile-menu md:hidden fixed inset-y-0 left-0 w-64 bg-gray-900/80 backdrop-blur-xl shadow-lg z-50 border-r border-gray-700/50"
+                >
+                  <div className="pt-20 px-4">
+                    {navItems.map(({ id, label, icon: Icon }) => (
+                      <motion.button
+                        key={id}
+                        whileHover={{ x: 10 }}
+                        whileTap={{ scale: 0.95 }}
+                        className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg mb-2 ${
+                          currentPage === id
+                            ? 'bg-yellow-400/20 text-yellow-400'
+                            : 'text-gray-300 hover:text-yellow-400'
+                        }`}
+                        onClick={() => {
+                          setCurrentPage(id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Icon />
+                        <span>{label}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </motion.div>
+              </>
             )}
           </AnimatePresence>
         </nav>
 
-        {/* Main Content */}
-        <main className="pt-16">
+        <main className={`pt-16 ${isMobileMenuOpen ? 'blur-sm' : ''}`}>
           <AnimatePresence mode="wait">
-          {currentPage === 'home' && <HomePage key="home" />}
+            {currentPage === 'home' && <HomePage key="home" />}
             {currentPage === 'nfts' && (
               <Page key="nfts">
                 <NFTPage />

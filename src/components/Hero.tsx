@@ -11,9 +11,12 @@ const HomePage = () => (
   <Page>
     <div>
       {/* Hero Section */}
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="min-h-[calc(100vh-6rem)] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Background Animation */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 via-transparent to-gray-900/20" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(250,204,21,0.1),transparent_50%)]" />
+        </div>
         
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -25,7 +28,7 @@ const HomePage = () => (
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mb-6"
+            className="mb-6 mt-8 lg:mt-0"
           >
             <span className="px-4 py-2 bg-yellow-400/10 rounded-full text-yellow-400 text-sm font-semibold">
               SPL-404 TOKEN ON SOLANA
