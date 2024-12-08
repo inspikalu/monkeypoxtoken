@@ -7,7 +7,7 @@ const Footer = () => (
     <footer className="bg-gray-900/50 backdrop-blur-sm py-12 mt-auto">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <h4 className="text-yellow-400 text-lg font-bold mb-4">About POX</h4>
+          <h4 className="text-yellow-400 text-lg font-bold mb-4">About MoonLambo</h4>
           <p className="text-gray-400">
             Revolutionary decentralized platform for trading both fungible and non-fungible assets.
           </p>
@@ -53,7 +53,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="mt-8 text-center text-gray-500">
-        <p>© 2024 POX. All rights reserved.</p>
+        <p>© 2024 MoonLambo. All rights reserved.</p>
       </div>
     </footer>
   );

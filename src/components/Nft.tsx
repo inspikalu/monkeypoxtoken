@@ -20,7 +20,7 @@ const NFTPage = () => (
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="text-xl font-bold text-yellow-400">POX NFT Collection</h3>
+                <h3 className="text-xl font-bold text-yellow-400">ASTRO NFT Collection</h3>
                 <p className="text-gray-400 mt-2">Unique digital assets with real utility</p>
               </div>
             </motion.div>

@@ -2,10 +2,35 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaLock, FaUnlock, FaDiamond, FaCoins, FaChartLine } from 'react-icons/fa6';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { truncateAddress } from '@/components/utils'
 
 const LockPage = () => {
+  const { publicKey, connected } = useWallet();
   const [activeTab, setActiveTab] = useState<'lock' | 'unlock'>('lock');
   const [assetType, setAssetType] = useState<'nft' | 'token'>('nft');
+  const [amount, setAmount] = useState<string>('');
+  const [duration, setDuration] = useState<string>('30');
+
+  const handleLockAction = async () => {
+    if (!connected) return;
+    
+    if (activeTab === 'lock') {
+      console.log('Locking:', {
+        assetType,
+        amount,
+        duration,
+        walletAddress: publicKey?.toBase58()
+      });
+    } else {
+      console.log('Unlocking:', {
+        assetType,
+        amount,
+        walletAddress: publicKey?.toBase58()
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen py-20 px-4">
@@ -43,6 +68,13 @@ const LockPage = () => {
 
         {/* Main Lock Interface */}
         <div className="max-w-md mx-auto bg-gray-800/50 backdrop-blur-sm rounded-xl p-8">
+          {/* Wallet Address Display */}
+          {connected && (
+            <div className="text-sm text-gray-400 text-right mb-4">
+              Connected: {truncateAddress(publicKey?.toBase58() || '')}
+            </div>
+          )}
+
           {/* Tab Navigation */}
           <div className="flex gap-4 mb-8">
             <button
@@ -100,16 +132,21 @@ const LockPage = () => {
               <div className="flex justify-between mb-2">
                 <label className="text-sm text-gray-400">Amount</label>
                 <span className="text-sm text-gray-400">
-                  Balance: {assetType === 'nft' ? '2 $POXNFT' : '5M $POX'}
+                  Balance: {assetType === 'nft' ? '2 $ASTRO' : '5M $MOONL'}
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <input
                   type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
                   className="flex-1 bg-transparent border border-gray-600 rounded-lg p-2 text-white"
                   placeholder="0.0"
                 />
-                <button className="px-3 py-1 bg-yellow-400/10 rounded-lg text-yellow-400 text-sm hover:bg-yellow-400/20">
+                <button 
+                  onClick={() => setAmount(assetType === 'nft' ? '2' : '5000000')}
+                  className="px-3 py-1 bg-yellow-400/10 rounded-lg text-yellow-400 text-sm hover:bg-yellow-400/20"
+                >
                   MAX
                 </button>
               </div>
@@ -121,7 +158,11 @@ const LockPage = () => {
                   <label className="text-sm text-gray-400">Lock Duration</label>
                   <span className="text-sm text-yellow-400">Higher APY for longer locks</span>
                 </div>
-                <select className="w-full bg-transparent border border-gray-600 rounded-lg p-2 text-white">
+                <select 
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="w-full bg-transparent border border-gray-600 rounded-lg p-2 text-white"
+                >
                   <option value="30">30 Days - 15% APY</option>
                   <option value="90">90 Days - 25% APY</option>
                   <option value="180">180 Days - 40% APY</option>
@@ -139,13 +180,18 @@ const LockPage = () => {
               </ul>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg text-gray-900 font-bold"
-            >
-              Connect Wallet
-            </motion.button>
+            {connected ? (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={handleLockAction}
+                className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg text-gray-900 font-bold"
+              >
+                {activeTab === 'lock' ? 'Lock Assets' : 'Unlock Assets'}
+              </motion.button>
+            ) : (
+              <WalletMultiButton className="w-full py-3 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg text-gray-900 font-bold flex justify-center" />
+            )}
           </div>
         </div>
       </div>

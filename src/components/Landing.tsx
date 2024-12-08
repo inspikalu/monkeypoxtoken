@@ -12,7 +12,7 @@ import {
   FaLock
 } from 'react-icons/fa6';
 import HomePage from './Hero';
-import NFTPage from './Nft';
+import NFTPage from '@/app/nft/page';
 import SwapPage from './Swap';
 import RoadmapPage from './Roadmap';
 import Footer from './Footer';
@@ -37,7 +37,7 @@ interface MousePosition {
   y: number;
 }
 
-const NavigationContext = React.createContext<NavigationContextType>({
+export const NavigationContext = React.createContext<NavigationContextType>({
   currentPage: 'home',
   setCurrentPage: () => {},
 });
@@ -129,7 +129,7 @@ const TokenApp: React.FC = () => {
                 >
                   <FaRocket className="text-yellow-400 animate-pulse h-8 w-8" />
                   <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-600">
-                    POX
+                    MOONLAMBO
                   </span>
                 </motion.div>
               </div>

@@ -7,9 +7,9 @@ const StatsSection = () => (
     <div className="py-20 px-4">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
-          { label: "Total Value Locked", value: "$10M+", icon: FaChartLine },
-          { label: "Active Users", value: "50K+", icon: FaRocket },
-          { label: "Daily Transactions", value: "100K+", icon: FaArrowsRotate },
+          { label: "Total Value Locked", value: "100M $MOONL", icon: FaChartLine },
+          { label: "Active Users", value: "10k+", icon: FaRocket },
+          { label: "Daily Transactions", value: "1k+", icon: FaArrowsRotate },
         ].map((stat, index) => (
           <motion.div
             key={index}
