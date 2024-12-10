@@ -2,7 +2,8 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { 
   mplHybrid, 
   initEscrowV1,
-  fetchEscrowV1
+  fetchEscrowV1,
+  MPL_HYBRID_PROGRAM_ID
 } from '@metaplex-foundation/mpl-hybrid';
 import { 
   createTokenIfMissing,
@@ -45,7 +46,7 @@ export class EscrowSetupService {
 
     // Calculate escrow PDA
     this.escrowAddress = this.umi.eddsa.findPda(
-      publicKey('MPL4o4wMzndgh8T1NVDxELQCj5UQfYTYEkabX3wNKtb'),
+      MPL_HYBRID_PROGRAM_ID,
       [
         string({ size: 'variable' }).serialize('escrow'),
         publicKeySerializer().serialize(publicKey(EscrowSetupService.CONFIG.COLLECTION)),
