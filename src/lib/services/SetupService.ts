@@ -19,8 +19,8 @@ import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
 
 export class EscrowSetupService {
   private static readonly CONFIG = {
-    // COLLECTION: '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87',
-    COLLECTION: '3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH',
+    COLLECTION: '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87',
+    // COLLECTION: '3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH',
     TOKEN_MINT: '4F9WCp4Dzv9SMf9auVQBbmXH97sVWT28mTzvqiSwgvUR',
     AUTHORITY: 'AopUFgSHXJmcQARjTJex43NYcaQSMcVWmKtcYybo43Xm',
     BASE_URI: 'https://gateway.pinata.cloud/ipfs/QmNSEeQmTXAJQYTKnpFiL9uDtK6svtvjVbzrqSwdy4N4m3',
