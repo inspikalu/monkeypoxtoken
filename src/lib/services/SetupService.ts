@@ -14,7 +14,7 @@ import {
 } from '@metaplex-foundation/mpl-toolbox';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { publicKey, publicKeyBytes, sol } from '@metaplex-foundation/umi';
-import { string } from '@metaplex-foundation/umi/serializers';
+import { string, publicKey as publicKeySerializer, } from '@metaplex-foundation/umi/serializers';
 import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
 
 export class EscrowSetupService {
@@ -48,7 +48,7 @@ export class EscrowSetupService {
       publicKey('MPL4o4wMzndgh8T1NVDxELQCj5UQfYTYEkabX3wNKtb'),
       [
         string({ size: 'variable' }).serialize('escrow'),
-        publicKeyBytes(EscrowSetupService.CONFIG.COLLECTION),
+        publicKeySerializer().serialize(publicKey(EscrowSetupService.CONFIG.COLLECTION)),
       ]
     );
 
