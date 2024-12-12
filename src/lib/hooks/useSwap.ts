@@ -3,10 +3,9 @@ import { useEffect, useState } from 'react';
 import { SwapService } from '../services/SwapService';
 import { toast } from 'react-hot-toast';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { fetchMetadataFromSeeds } from '@metaplex-foundation/mpl-token-metadata';
 import { signerIdentity, publicKey as web3publicKey } from '@metaplex-foundation/umi';
 import { createSignerFromWalletAdapter } from '@metaplex-foundation/umi-signer-wallet-adapters';
-
+import { fetchAsset } from '@metaplex-foundation/mpl-core';
 
 interface TokenMetadata {
   name: string;
@@ -77,66 +76,66 @@ const loadTokenBalance = async () => {
   }
 };
 
-  const loadAvailableNftMints = async () => {
-    if (!connected) return;
+const loadAvailableNftMints = async () => {
+  if (!connected) return;
+  
+  setIsMetadataLoading(true);
+  try {
+    const mints = await swapService.getAvailableNftMints();
+    console.log('Available mints:', mints);
     
-    setIsMetadataLoading(true);
-    try {
-      const mints = await swapService.getAvailableNftMints();
-      console.log('Available mints:', mints);
-      
-      const nftMetadata = await Promise.all(
-        mints.map(async (mint) => {
+    const nftMetadata = await Promise.all(
+      mints.map(async (mint) => {
+        try {
+          const mintPubkey = web3publicKey(mint);
+          // Use Core's fetchAsset instead of fetchMetadataFromSeeds
+          const asset = await fetchAsset(swapService.umi, mintPubkey);
+          console.log(`Fetched Core asset for ${mint}:`, asset);
+
           try {
-            const mintPubkey = web3publicKey(mint);
-            const metadata = await fetchMetadataFromSeeds(swapService.umi, {
-              mint: mintPubkey
-            });
-            console.log(`Fetched metadata for ${mint}:`, metadata);
-  
-            try {
-              const response = await fetch(metadata.uri);
-              if (!response.ok) throw new Error('Failed to fetch metadata JSON');
-              
-              const jsonMetadata = await response.json();
-              console.log(`JSON metadata for ${mint}:`, jsonMetadata);
-  
-              return {
-                mint,
-                name: jsonMetadata.name || `NFT #${mint.slice(0, 4)}`,
-                image: jsonMetadata.image,
-                isLocked: false,
-                description: jsonMetadata.description,
-                attributes: jsonMetadata.attributes
-              };
-            } catch (jsonError) {
-              console.warn(`Failed to fetch JSON metadata for ${mint}:`, jsonError);
-              return {
-                mint,
-                name: metadata.name || `NFT #${mint.slice(0, 4)}`,
-                isLocked: false,
-                description: undefined
-              };
-            }
-          } catch (error) {
-            console.error(`Failed to fetch metadata for mint ${mint}:`, error);
+            const response = await fetch(asset.uri);
+            if (!response.ok) throw new Error('Failed to fetch metadata JSON');
+            
+            const jsonMetadata = await response.json();
+            console.log(`JSON metadata for ${mint}:`, jsonMetadata);
+
             return {
               mint,
-              name: `NFT #${mint.slice(0, 4)}`,
-              isLocked: false
+              name: jsonMetadata.name || asset.name || `NFT #${mint.slice(0, 4)}`,
+              image: jsonMetadata.image,
+              isLocked: false, // You might want to check asset ownership or other Core-specific states
+              description: jsonMetadata.description,
+              attributes: jsonMetadata.attributes
+            };
+          } catch (jsonError) {
+            console.warn(`Failed to fetch JSON metadata for ${mint}:`, jsonError);
+            return {
+              mint,
+              name: asset.name || `NFT #${mint.slice(0, 4)}`,
+              isLocked: false,
+              description: undefined
             };
           }
-        })
-      );
-  
-      console.log('Final processed NFT metadata:', nftMetadata);
-      setAvailableNftMints(nftMetadata);
-    } catch (error) {
-      console.error('Failed to load NFT mints:', error);
-    } finally {
-      setIsMetadataLoading(false);
-    }
-  };
+        } catch (error) {
+          console.error(`Failed to fetch Core asset data for mint ${mint}:`, error);
+          return {
+            mint,
+            name: `NFT #${mint.slice(0, 4)}`,
+            isLocked: false
+          };
+        }
+      })
+    );
+
+    console.log('Final processed Core NFT metadata:', nftMetadata);
+    setAvailableNftMints(nftMetadata);
+  } catch (error) {
+    console.error('Failed to load Core NFT mints:', error);
+    toast.error('Failed to load NFTs');
+  } finally {
+    setIsMetadataLoading(false);
+  }
+};
 
   const handleNftToTokenSwap = async (nftMint: string) => {
     if (!connected || !publicKey) {

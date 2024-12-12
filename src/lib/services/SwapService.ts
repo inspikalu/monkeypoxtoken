@@ -11,7 +11,7 @@ import {
 import { publicKey } from '@metaplex-foundation/umi';
 import { EscrowSetupService } from './SetupService';
 import { toast } from 'react-hot-toast';
-import { fetchMetadataFromSeeds } from '@metaplex-foundation/mpl-token-metadata';
+import { fetchAsset, fetchCollection } from '@metaplex-foundation/mpl-core';
 
 
 export interface SwapError extends Error {
@@ -25,23 +25,37 @@ export class SwapService {
   private static TOKEN_MINT = '4F9WCp4Dzv9SMf9auVQBbmXH97sVWT28mTzvqiSwgvUR';
   private static TOKEN_ACCOUNT = '8hXxfQgEobh3p8PqK3u9cR2GcHCosZm8t6Gb8qSSRiS3';
   private static AUTHORITY = 'AopUFgSHXJmcQARjTJex43NYcaQSMcVWmKtcYybo43Xm';
-  private static COLLECTION = '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87';
+  // private static COLLECTION = '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87';
+  private static COLLECTION = '9mKksxtbVMcRdpfe9ZJBuuQqShywNfvdyYSkpXSxLms9';
+
   private static TOKEN_PER_NFT = 100000;
   
   // List of NFTs available for swapping
-  private static NFT_MINTS = [
-    "3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH",
-    "7hzmgvHbrJbBeWfF9AoV6Xr4pz95FJ8dc8GsoWz8khaL",
-    "DknC1dabAkxYLnJ1aDSSNmSYaBkNVt7yodKYW8qcejPK",
-    "BMeMddgrbPqAc6g7je56YbT1UvDV2QPC7VndzbWrnwqc",
-    "DukeJAqUsHmF64ibnanRHsdjVooAEnxcHJvMADBLrrSg",
-    "7EDN2RfTwYszuM7MyFcKRDRrt91rEFGVMsqHGSGKwp4o",
-    "HunGCVUevqwgSZNgfqJ8TYYmDig9vE424fbfbPX4GrZt",
-    "9snifkfMDJcT4bwBdMTTHVmtFhjiwy3Jv1Ahz2Jw5mwP",
-    "Bo5cqHUNZh9MgPzeT5FRFThFStD23epkNNNpyYhy7gx1",
-    "CvVHhCx6zKXjmKTHSD4kZeVksB22ffz3u948ttHS87sG"
-  ];
+  // private static NFT_MINTS = [
+  //   "3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH",
+  //   "7hzmgvHbrJbBeWfF9AoV6Xr4pz95FJ8dc8GsoWz8khaL",
+  //   "DknC1dabAkxYLnJ1aDSSNmSYaBkNVt7yodKYW8qcejPK",
+  //   "BMeMddgrbPqAc6g7je56YbT1UvDV2QPC7VndzbWrnwqc",
+  //   "DukeJAqUsHmF64ibnanRHsdjVooAEnxcHJvMADBLrrSg",
+  //   "7EDN2RfTwYszuM7MyFcKRDRrt91rEFGVMsqHGSGKwp4o",
+  //   "HunGCVUevqwgSZNgfqJ8TYYmDig9vE424fbfbPX4GrZt",
+  //   "9snifkfMDJcT4bwBdMTTHVmtFhjiwy3Jv1Ahz2Jw5mwP",
+  //   "Bo5cqHUNZh9MgPzeT5FRFThFStD23epkNNNpyYhy7gx1",
+  //   "CvVHhCx6zKXjmKTHSD4kZeVksB22ffz3u948ttHS87sG"
+  // ];
 
+  private static NFT_MINTS = [
+  "J7e5vQdcVbk5m65gYTUYvT3ewZBzsG8kgLd9ZbRK3GTh",
+  "5btViSvacRmnprZ2z9fgMvcE7CJaX2YX7JvUWtAvQHYv",
+  "D1Cnu1dF98cbCrn4uXzh63JCiCNn2537u2VtbaGHZ9Bv",
+  "3eyi7dwBD2moq5j3zmmmt1FoeeyfUST8Kt2YYD6trbMB",
+  "E6Zvr6GvUikFBi7LUaKzMXXsBzaMeKm4H4uzcm92utVV",
+  "8d86zDhXrBU4RNxEzoixQR2HpxPbSxahhxMgUahFiQTj",
+  "8yxAU6iFWffQvkEfGQn2qtUPXVa4hy5RXCP5LvikNyjf",
+  "2PJzcP4UaYwDdYXRexq57v3xGobKvrtBbtUU6Zm2bJhK",
+  "7XL5QC3gap5Bqqabkj4e48e9hxmyrSKRXkxTKsjxssw",
+  "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
+];
   public umi;
 
   constructor() {
@@ -223,22 +237,34 @@ export class SwapService {
     }
   }
 
+  async verifyAsset(nftMint: string) {
+    try {
+      // Verify the asset exists and belongs to the collection
+      const asset = await fetchAsset(this.umi, publicKey(nftMint));
+      
+      // Check if the asset belongs to our collection
+      // if (!asset.collection || asset.collection.toString() !== SwapService.COLLECTION) {
+      //   throw new Error('Asset does not belong to the correct collection');
+      // }
+
+      return true;
+    } catch (error) {
+      console.error('Asset verification failed:', error);
+      throw this.handleError(error);
+    }
+  }
+
   async verifyCollection() {
     try {
-      console.log('Verifying collection...');
+      console.log('Verifying Core collection...');
       const collection = publicKey(SwapService.COLLECTION);
       
-      const metadata = await fetchMetadataFromSeeds(this.umi, { mint: collection });
-      console.log('Collection metadata:', metadata);
+      // Fetch collection data using Core's method
+      const collectionData = await fetchCollection(this.umi, collection);
+      console.log('Collection data:', collectionData);
 
-      if (!metadata.collectionDetails) {
-        throw new Error('Not a verified collection NFT');
-      }
-
-      // Additional checks as needed
-      const isValid = 
-        metadata.updateAuthority.toString() === SwapService.AUTHORITY &&
-        metadata.mint.toString() === SwapService.COLLECTION;
+      // Verify collection authority
+      const isValid = collectionData.updateAuthority.toString() === SwapService.AUTHORITY;
 
       if (!isValid) {
         throw new Error('Collection authority mismatch');
@@ -247,12 +273,9 @@ export class SwapService {
       return {
         isValid: true,
         details: {
-          name: metadata.name,
-          symbol: metadata.symbol,
-          uri: metadata.uri,
-          updateAuthority: metadata.updateAuthority.toString(),
-          isMutable: metadata.isMutable,
-          collectionDetails: metadata.collectionDetails
+          name: collectionData.name,
+          uri: collectionData.uri,
+          updateAuthority: collectionData.updateAuthority.toString(),
         }
       };
     } catch (error) {

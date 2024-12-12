@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { FaSync } from 'react-icons/fa';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { fetchMetadataFromSeeds } from '@metaplex-foundation/mpl-token-metadata';
 import { publicKey } from '@metaplex-foundation/umi';
 import { NFTCard } from '@/components/NFTCard';
 import { NftPreviewModal } from '@/components/NftPreviewModal';
@@ -12,18 +11,32 @@ import { NFTSkeleton } from '@/components/NFTSkeleton';
 import { ErrorDisplay } from '@/components/ErrorDisplay';
 import { useUmi } from '@/lib/hooks/useUmi';
 import type { NFTMetadata } from '@/types/nft';
+import { fetchAsset } from '@metaplex-foundation/mpl-core';
+
+// const NFT_MINTS = [
+//   "3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH",
+//   "7hzmgvHbrJbBeWfF9AoV6Xr4pz95FJ8dc8GsoWz8khaL",
+//   "DknC1dabAkxYLnJ1aDSSNmSYaBkNVt7yodKYW8qcejPK",
+//   "BMeMddgrbPqAc6g7je56YbT1UvDV2QPC7VndzbWrnwqc",
+//   "DukeJAqUsHmF64ibnanRHsdjVooAEnxcHJvMADBLrrSg",
+//   "7EDN2RfTwYszuM7MyFcKRDRrt91rEFGVMsqHGSGKwp4o",
+//   "HunGCVUevqwgSZNgfqJ8TYYmDig9vE424fbfbPX4GrZt",
+//   "9snifkfMDJcT4bwBdMTTHVmtFhjiwy3Jv1Ahz2Jw5mwP",
+//   "Bo5cqHUNZh9MgPzeT5FRFThFStD23epkNNNpyYhy7gx1",
+//   "CvVHhCx6zKXjmKTHSD4kZeVksB22ffz3u948ttHS87sG"
+// ];
 
 const NFT_MINTS = [
-  "3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH",
-  "7hzmgvHbrJbBeWfF9AoV6Xr4pz95FJ8dc8GsoWz8khaL",
-  "DknC1dabAkxYLnJ1aDSSNmSYaBkNVt7yodKYW8qcejPK",
-  "BMeMddgrbPqAc6g7je56YbT1UvDV2QPC7VndzbWrnwqc",
-  "DukeJAqUsHmF64ibnanRHsdjVooAEnxcHJvMADBLrrSg",
-  "7EDN2RfTwYszuM7MyFcKRDRrt91rEFGVMsqHGSGKwp4o",
-  "HunGCVUevqwgSZNgfqJ8TYYmDig9vE424fbfbPX4GrZt",
-  "9snifkfMDJcT4bwBdMTTHVmtFhjiwy3Jv1Ahz2Jw5mwP",
-  "Bo5cqHUNZh9MgPzeT5FRFThFStD23epkNNNpyYhy7gx1",
-  "CvVHhCx6zKXjmKTHSD4kZeVksB22ffz3u948ttHS87sG"
+  "J7e5vQdcVbk5m65gYTUYvT3ewZBzsG8kgLd9ZbRK3GTh",
+  "5btViSvacRmnprZ2z9fgMvcE7CJaX2YX7JvUWtAvQHYv",
+  "D1Cnu1dF98cbCrn4uXzh63JCiCNn2537u2VtbaGHZ9Bv",
+  "3eyi7dwBD2moq5j3zmmmt1FoeeyfUST8Kt2YYD6trbMB",
+  "E6Zvr6GvUikFBi7LUaKzMXXsBzaMeKm4H4uzcm92utVV",
+  "8d86zDhXrBU4RNxEzoixQR2HpxPbSxahhxMgUahFiQTj",
+  "8yxAU6iFWffQvkEfGQn2qtUPXVa4hy5RXCP5LvikNyjf",
+  "2PJzcP4UaYwDdYXRexq57v3xGobKvrtBbtUU6Zm2bJhK",
+  "7XL5QC3gap5Bqqabkj4e48e9hxmyrSKRXkxTKsjxssw",
+  "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
 ];
 
 const NFTPage = () => {
@@ -56,15 +69,15 @@ const NFTPage = () => {
         NFT_MINTS.map(async (mint) => {
           try {
             const mintPubkey = publicKey(mint);
-            const metadata = await fetchMetadataFromSeeds(umi, {
-              mint: mintPubkey
-            });
 
-            const response = await fetch(metadata.uri);
+            const asset = await fetchAsset(umi, mintPubkey);
+            
+
+            const response = await fetch(asset.uri);
             if (!response.ok) throw new Error('Failed to fetch metadata');
             
             const jsonMetadata = await response.json();
-            
+            console.log(`JSON metadata for ${mint}:`, jsonMetadata);
             // Check if NFT is locked (you might want to implement your own logic here)
             const isLocked = false; // Replace with actual lock status check
 

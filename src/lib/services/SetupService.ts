@@ -16,12 +16,12 @@ import {
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { publicKey, publicKeyBytes, sol } from '@metaplex-foundation/umi';
 import { string, publicKey as publicKeySerializer, } from '@metaplex-foundation/umi/serializers';
-import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
+import { mplCore } from '@metaplex-foundation/mpl-core';
 
 export class EscrowSetupService {
   private static readonly CONFIG = {
-    COLLECTION: '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87',
-    // COLLECTION: '3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH',
+    // COLLECTION: '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87',
+    COLLECTION: '9mKksxtbVMcRdpfe9ZJBuuQqShywNfvdyYSkpXSxLms9',
     TOKEN_MINT: '4F9WCp4Dzv9SMf9auVQBbmXH97sVWT28mTzvqiSwgvUR',
     AUTHORITY: 'AopUFgSHXJmcQARjTJex43NYcaQSMcVWmKtcYybo43Xm',
     BASE_URI: 'https://gateway.pinata.cloud/ipfs/QmNSEeQmTXAJQYTKnpFiL9uDtK6svtvjVbzrqSwdy4N4m3',
@@ -42,7 +42,7 @@ export class EscrowSetupService {
       .use(web3JsEddsa())
       .use(mplHybrid())
       .use(mplToolbox())
-      .use(mplTokenMetadata());
+      .use(mplCore());
 
     // Calculate escrow PDA
     this.escrowAddress = this.umi.eddsa.findPda(
@@ -57,7 +57,7 @@ export class EscrowSetupService {
 
   async initializeEscrow() {
     try {
-      console.log('Initializing escrow...See address below:');
+      console.log('Initializing escrow with Core collection...See address below:');
         console.log(this.escrowAddress)
       // Get fee wallet's token account
       const feeTokenAccount = findAssociatedTokenPda(this.umi, {
