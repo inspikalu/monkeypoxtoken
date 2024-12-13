@@ -5,6 +5,8 @@ import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { mplHybrid } from '@metaplex-foundation/mpl-hybrid';
 import { mplToolbox } from '@metaplex-foundation/mpl-toolbox';
 import { mplCore } from '@metaplex-foundation/mpl-core';
+import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
+
 
 export const useUmi = () => {
   return useMemo(() => {
@@ -12,6 +14,8 @@ export const useUmi = () => {
       .use(web3JsEddsa())
       .use(mplHybrid())
       .use(mplToolbox())
-      .use(mplCore());
+      .use(mplCore())
+      .use(mplTokenMetadata());
+      
   }, []);
 };

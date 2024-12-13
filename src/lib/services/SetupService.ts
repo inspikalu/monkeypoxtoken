@@ -17,6 +17,7 @@ import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { publicKey, publicKeyBytes, sol } from '@metaplex-foundation/umi';
 import { string, publicKey as publicKeySerializer, } from '@metaplex-foundation/umi/serializers';
 import { mplCore } from '@metaplex-foundation/mpl-core';
+import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
 
 export class EscrowSetupService {
   private static readonly CONFIG = {
@@ -42,7 +43,8 @@ export class EscrowSetupService {
       .use(web3JsEddsa())
       .use(mplHybrid())
       .use(mplToolbox())
-      .use(mplCore());
+      .use(mplCore())
+      .use(mplTokenMetadata());
 
     // Calculate escrow PDA
     this.escrowAddress = this.umi.eddsa.findPda(

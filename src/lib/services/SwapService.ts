@@ -7,6 +7,7 @@ import {
 import { 
   fetchToken, 
   findAssociatedTokenPda,
+  createTokenIfMissing
 } from '@metaplex-foundation/mpl-toolbox';
 import { publicKey } from '@metaplex-foundation/umi';
 import { EscrowSetupService } from './SetupService';
@@ -154,19 +155,52 @@ export class SwapService {
       await this.setupAndValidateEscrow();
 
       // Get token account for the wallet
-      const walletTokenAccount = findAssociatedTokenPda(this.umi, {
-        mint: publicKey(SwapService.TOKEN_MINT),
-        owner: this.umi.identity.publicKey
-      });
+    // Get and create token account for the wallet if it doesn't exist
+    const walletTokenAccount = findAssociatedTokenPda(this.umi, {
+      mint: publicKey(SwapService.TOKEN_MINT),
+      owner: this.umi.identity.publicKey
+    });
 
+    console.log('Creating token account if needed...');
+    const createTokenAccountTx = await createTokenIfMissing(this.umi, {
+      mint: publicKey(SwapService.TOKEN_MINT),
+      owner: this.umi.identity.publicKey,
+      token: walletTokenAccount,
+    });
+
+    // Wait for token account creation to be confirmed
+    if (createTokenAccountTx.items.length > 0) {
+      await createTokenAccountTx.sendAndConfirm(this.umi);
+    }
+
+    // Verify the token account exists and fetch its data
+    console.log('Verifying token account...');
+    const tokenAccount = await fetchToken(this.umi, walletTokenAccount);
+    console.log('Token account data:', tokenAccount);
+
+    // Get escrow data to verify configuration
+    console.log('Fetching escrow data...');
+    const escrowData = await fetchEscrowV1(this.umi, this.escrowSetupService.escrowAddress);
+    console.log('Escrow data:', escrowData);
+
+    console.log('Executing release transaction with params:', {
+      owner: this.umi.identity.publicKey.toString(),
+      escrow: this.escrowSetupService.escrowAddress.toString(),
+      asset: nftMint,
+      collection: SwapService.COLLECTION,
+      feeProjectAccount: SwapService.AUTHORITY,
+      token: walletTokenAccount.toString()
+    });
       // Execute the NFT to tokens swap
       const tx = await releaseV1(this.umi, {
         owner: this.umi.identity,
-        escrow: this.escrowSetupService.escrowAddress,
+        // escrow: publicKey(this.escrowSetupService.escrowAddress),
+        escrow: publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz"),
         asset: publicKey(nftMint),
         collection: publicKey(SwapService.COLLECTION),
         feeProjectAccount: publicKey(SwapService.AUTHORITY),
-        token: walletTokenAccount,
+        // token: publicKey(walletTokenAccount),
+        token: publicKey("8hXxfQgEobh3p8PqK3u9cR2GcHCosZm8t6Gb8qSSRiS3"),
       });
 
       return await tx.sendAndConfirm(this.umi);
