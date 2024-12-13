@@ -37,6 +37,7 @@ export class EscrowSetupService {
 
   public umi;
   public escrowAddress;
+  public token;
 
   constructor() {
     this.umi = createUmi('https://api.devnet.solana.com')
@@ -54,6 +55,8 @@ export class EscrowSetupService {
         publicKeySerializer().serialize(publicKey(EscrowSetupService.CONFIG.COLLECTION)),
       ]
     );
+
+    this.token = publicKey(EscrowSetupService.CONFIG.TOKEN_MINT);
 
   }
 
@@ -73,7 +76,7 @@ export class EscrowSetupService {
         escrow: this.escrowAddress,
         collection: publicKey(EscrowSetupService.CONFIG.COLLECTION),
         token: publicKey(EscrowSetupService.CONFIG.TOKEN_MINT),
-        feeLocation: publicKey(EscrowSetupService.CONFIG.AUTHORITY),
+        feeLocation: feeTokenAccount,
         feeAta: feeTokenAccount,
         min: EscrowSetupService.CONFIG.MIN_INDEX,
         max: EscrowSetupService.CONFIG.MAX_INDEX,

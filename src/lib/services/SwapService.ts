@@ -161,6 +161,12 @@ export class SwapService {
       owner: this.umi.identity.publicKey
     });
 
+    // Get fee wallet's token account
+    const feeTokenAccount = findAssociatedTokenPda(this.umi, {
+      mint: publicKey(SwapService.TOKEN_MINT),
+      owner: publicKey(SwapService.AUTHORITY)
+    });
+
     console.log('Creating token account if needed...');
     const createTokenAccountTx = await createTokenIfMissing(this.umi, {
       mint: publicKey(SwapService.TOKEN_MINT),
@@ -189,18 +195,19 @@ export class SwapService {
       asset: nftMint,
       collection: SwapService.COLLECTION,
       feeProjectAccount: SwapService.AUTHORITY,
-      token: walletTokenAccount.toString()
+      feeTokenAccount: feeTokenAccount,
+      token: this.escrowSetupService.token.toString()
     });
       // Execute the NFT to tokens swap
       const tx = await releaseV1(this.umi, {
         owner: this.umi.identity,
-        // escrow: publicKey(this.escrowSetupService.escrowAddress),
-        escrow: publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz"),
+        escrow: publicKey(this.escrowSetupService.escrowAddress),
+        // escrow: publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz"),
         asset: publicKey(nftMint),
         collection: publicKey(SwapService.COLLECTION),
         feeProjectAccount: publicKey(SwapService.AUTHORITY),
-        // token: publicKey(walletTokenAccount),
-        token: publicKey("8hXxfQgEobh3p8PqK3u9cR2GcHCosZm8t6Gb8qSSRiS3"),
+        feeTokenAccount: feeTokenAccount,
+        token: this.escrowSetupService.token,
       });
 
       return await tx.sendAndConfirm(this.umi);
@@ -219,13 +226,20 @@ export class SwapService {
         owner: this.umi.identity.publicKey
       });
 
+      // Get fee wallet's token account
+      const feeTokenAccount = findAssociatedTokenPda(this.umi, {
+        mint: publicKey(SwapService.TOKEN_MINT),
+        owner: publicKey(SwapService.AUTHORITY)
+      });
+
       const tx = await captureV1(this.umi, {
         owner: this.umi.identity,
         escrow: this.escrowSetupService.escrowAddress,
         asset: publicKey(nftMint),
         collection: publicKey(SwapService.COLLECTION),
         feeProjectAccount: publicKey(SwapService.AUTHORITY),
-        token: walletTokenAccount,
+        feeTokenAccount: feeTokenAccount,
+        token: this.escrowSetupService.token,
       });
 
       return await tx.sendAndConfirm(this.umi);
