@@ -45,18 +45,32 @@ export class SwapService {
   //   "CvVHhCx6zKXjmKTHSD4kZeVksB22ffz3u948ttHS87sG"
   // ];
 
-  private static NFT_MINTS = [
-  "J7e5vQdcVbk5m65gYTUYvT3ewZBzsG8kgLd9ZbRK3GTh",
-  "5btViSvacRmnprZ2z9fgMvcE7CJaX2YX7JvUWtAvQHYv",
-  "D1Cnu1dF98cbCrn4uXzh63JCiCNn2537u2VtbaGHZ9Bv",
-  "3eyi7dwBD2moq5j3zmmmt1FoeeyfUST8Kt2YYD6trbMB",
-  "E6Zvr6GvUikFBi7LUaKzMXXsBzaMeKm4H4uzcm92utVV",
-  "8d86zDhXrBU4RNxEzoixQR2HpxPbSxahhxMgUahFiQTj",
-  "8yxAU6iFWffQvkEfGQn2qtUPXVa4hy5RXCP5LvikNyjf",
-  "2PJzcP4UaYwDdYXRexq57v3xGobKvrtBbtUU6Zm2bJhK",
-  "7XL5QC3gap5Bqqabkj4e48e9hxmyrSKRXkxTKsjxssw",
-  "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
+//   private static NFT_MINTS = [
+//   "J7e5vQdcVbk5m65gYTUYvT3ewZBzsG8kgLd9ZbRK3GTh",
+//   "5btViSvacRmnprZ2z9fgMvcE7CJaX2YX7JvUWtAvQHYv",
+//   "D1Cnu1dF98cbCrn4uXzh63JCiCNn2537u2VtbaGHZ9Bv",
+//   "3eyi7dwBD2moq5j3zmmmt1FoeeyfUST8Kt2YYD6trbMB",
+//   "E6Zvr6GvUikFBi7LUaKzMXXsBzaMeKm4H4uzcm92utVV",
+//   "8d86zDhXrBU4RNxEzoixQR2HpxPbSxahhxMgUahFiQTj",
+//   "8yxAU6iFWffQvkEfGQn2qtUPXVa4hy5RXCP5LvikNyjf",
+//   "2PJzcP4UaYwDdYXRexq57v3xGobKvrtBbtUU6Zm2bJhK",
+//   "7XL5QC3gap5Bqqabkj4e48e9hxmyrSKRXkxTKsjxssw",
+//   "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
+// ];
+
+private static NFT_MINTS = [
+  "HVnSwRqGN6YRCfPh8iEqNaUGKFN9dkdYsrMquSPxEFpC",
+  "5E9LTSK7Cfnh6a1VQRpg6JXeAqTtE2x56cUZJLF1SyrV",
+  "JCTmu3eYW14sQWtQoqhWX3G1roEbL1Y3j6DGTLE2PgQK",
+  "26XworA2a3HFHWuUSGDf2nGzUJDTrUZQR5rFc3HTmsGZ",
+  "HJU5pSDK8jBp7ExbJUa5UM7GmKKeYSbtGoxyJuw4snrH",
+  "7nDBHKvmiJ7DBZJE1sUrmb3KyFMJcDTdyHC3ueUkfZ7e",
+  "DUz8NA5jNR7Poov4spHML1DNmeRFmfR7BR4efMsuGnsA",
+  "E4Kdfe6uMGbsH8nLnQ8NvaZ7kPXADvoYEWEYMy4YJq3N",
+  "6LZXuHXzPeqMQDakqLBHvvXNRPWMZLBdoLnaiBpFLvJZ",
+  "6eu1hDaxQN51NZPrapyYMNg8Tgsmt8VJRUdwy6kUJziz"
 ];
+
   public umi;
 
   constructor() {
