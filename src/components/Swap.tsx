@@ -12,6 +12,7 @@ import { useSwap } from '@/lib/hooks/useSwap'
 import { NftPreviewModal } from '@/components/NftPreviewModal'
 import type { NftMetadata } from '@/lib/hooks/useSwap'
 import { FaInfoCircle } from 'react-icons/fa'
+import SwapSuccessModal from '@/components/SwapSuccessModal'
 
 const createLoadingToast = () => {
   return toast.loading('Processing transaction...', {
@@ -58,8 +59,7 @@ const SwapPage = () => {
   const [showPreview, setShowPreview] = useState(false)
   const [selectedNft, setSelectedNft] = useState<NftMetadata | null>(null)
   const [isNftToToken, setIsNftToToken] = useState(true)
-
-  
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const { 
     isLoading, 
@@ -136,7 +136,7 @@ const SwapPage = () => {
     const toastId = createLoadingToast();
   
     try {
-      if (Number(nftAmount) > 0) {
+      if (isNftToToken) {  // <-- Use this instead
         if (!selectedNftMint) {
           updateToastError(toastId, new Error('Please select an NFT to swap'));
           return;
@@ -150,6 +150,7 @@ const SwapPage = () => {
         
         const tx = await handleNftToTokenSwap(selectedNftMint)
         updateToastSuccess(toastId, 'Successfully swapped NFT for tokens!');
+        setShowSuccessModal(true);
       } else {
         if (numTokenAmount > tokenBalance) {
           updateToastError(toastId, new Error('Insufficient token balance'));
@@ -164,6 +165,7 @@ const SwapPage = () => {
         
         const tx = await handleTokenToNftSwap(availableNft.mint)
         updateToastSuccess(toastId, 'Successfully swapped tokens for NFT!');
+        setShowSuccessModal(true);
       }
   
       // Reset form after successful swap
@@ -391,6 +393,14 @@ const SwapPage = () => {
           onClose={() => setShowPreview(false)}
         />
       )}
+      {/* Success Modal */}
+      <SwapSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        isNftToToken={isNftToToken}
+        nftAmount={Number(nftAmount)}
+        tokenAmount={Number(tokenAmount)}
+      />
     </div>
   )
 }
