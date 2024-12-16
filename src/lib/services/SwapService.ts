@@ -248,7 +248,7 @@ private static NFT_MINTS = [
 
       const tx = await captureV1(this.umi, {
         owner: this.umi.identity,
-        escrow: this.escrowSetupService.escrowAddress,
+        escrow: publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz"),
         asset: publicKey(nftMint),
         collection: publicKey(SwapService.COLLECTION),
         feeProjectAccount: publicKey(SwapService.AUTHORITY),
