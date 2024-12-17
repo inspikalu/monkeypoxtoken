@@ -151,6 +151,12 @@ const SwapPage = () => {
         const tx = await handleNftToTokenSwap(selectedNftMint)
         updateToastSuccess(toastId, 'Successfully swapped NFT for tokens!');
         setShowSuccessModal(true);
+        setTimeout(() => {
+          setNftAmount('1')
+          setTokenAmount(tokensPerNft.toString())
+          setSelectedNftMint('')
+          setSelectedNft(null)
+        }, 500);
       } else {
         if (numTokenAmount > tokenBalance) {
           updateToastError(toastId, new Error('Insufficient token balance'));
@@ -166,13 +172,14 @@ const SwapPage = () => {
         const tx = await handleTokenToNftSwap(availableNft.mint)
         updateToastSuccess(toastId, 'Successfully swapped tokens for NFT!');
         setShowSuccessModal(true);
+        // Reset form after a slight delay
+        setTimeout(() => {
+          setNftAmount('1')
+          setTokenAmount(tokensPerNft.toString())
+          setSelectedNftMint('')
+          setSelectedNft(null)
+        }, 500);
       }
-  
-      // Reset form after successful swap
-      setNftAmount('1')
-      setTokenAmount(tokensPerNft.toString())
-      setSelectedNftMint('')
-      setSelectedNft(null)
     } catch (error) {
       console.error('Swap failed:', error)
       updateToastError(toastId, error);
