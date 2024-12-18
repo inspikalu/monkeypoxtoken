@@ -16,7 +16,7 @@ import {
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
 import { publicKey, publicKeyBytes, sol } from '@metaplex-foundation/umi';
 import { string, publicKey as publicKeySerializer, } from '@metaplex-foundation/umi/serializers';
-import { mplCore } from '@metaplex-foundation/mpl-core';
+import { addCollectionPlugin, mplCore } from '@metaplex-foundation/mpl-core';
 import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
 
 export class EscrowSetupService {
@@ -145,6 +145,34 @@ export class EscrowSetupService {
       return signature;
     } catch (error) {
       console.error('Failed to fund escrow:', error);
+      throw error;
+    }
+  }
+
+  async addDelegates() {
+    try {
+      console.log('Adding delegates to collection...');
+      
+      const delegates = [
+        publicKey("5jD4WTmGYmJG6e9JjRvJX8Svk5Ph2rxqwPjrqky33rRg"),
+        publicKey("6Ajc185h256k1fVxuWGJCZjUXbFT8SQ17J3LZLRCLbTr")
+      ];
+
+      await addCollectionPlugin(this.umi, {
+        collection: publicKey(EscrowSetupService.CONFIG.COLLECTION),
+        plugin: {
+          type: 'UpdateDelegate',
+          additionalDelegates: delegates, // Now correctly typed as PublicKey[]
+          authority: { 
+            type: 'Address', 
+            address: publicKey(this.escrowAddress) 
+          },
+        },
+      }).sendAndConfirm(this.umi);
+  
+      console.log('Successfully added delegates to collection');
+    } catch (error) {
+      console.error('Failed to add delegates:', error);
       throw error;
     }
   }

@@ -58,31 +58,31 @@ export class SwapService {
 //   "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
 // ];
 
-// private static NFT_MINTS = [
-//   "HVnSwRqGN6YRCfPh8iEqNaUGKFN9dkdYsrMquSPxEFpC",
-//   "5E9LTSK7Cfnh6a1VQRpg6JXeAqTtE2x56cUZJLF1SyrV",
-//   "JCTmu3eYW14sQWtQoqhWX3G1roEbL1Y3j6DGTLE2PgQK",
-//   "26XworA2a3HFHWuUSGDf2nGzUJDTrUZQR5rFc3HTmsGZ",
-//   "HJU5pSDK8jBp7ExbJUa5UM7GmKKeYSbtGoxyJuw4snrH",
-//   "7nDBHKvmiJ7DBZJE1sUrmb3KyFMJcDTdyHC3ueUkfZ7e",
-//   "DUz8NA5jNR7Poov4spHML1DNmeRFmfR7BR4efMsuGnsA",
-//   "E4Kdfe6uMGbsH8nLnQ8NvaZ7kPXADvoYEWEYMy4YJq3N",
-//   "6LZXuHXzPeqMQDakqLBHvvXNRPWMZLBdoLnaiBpFLvJZ",
-//   "6eu1hDaxQN51NZPrapyYMNg8Tgsmt8VJRUdwy6kUJziz"
-// ];
-
 private static NFT_MINTS = [
-  "Aeg48DtVY8F1op2FQDaPT7qV2Ue1aEFS7gF3vLy3UXcJ",
-  "CTxPv6rMDu9JGUKajnikyMNHTFZmU2HqGqNrEHQ5npnU",
-  "GFEEhCxVqUsPxzS3fpLL4qumQcFQ1MfQyiCK1fc9jdVW",
-  "HK7cqJ8YucjXxSVEabTD4m7k77kMQB6QcM1s6pdHgT72",
-  "3tcbXzwfFSg8sKSur6uPnuLLa8iJGvr1uAsgDR6Wah9K",
-  "8j4Y7dwrNVxBwP9Jsx2w85yXDnzrNmdcUjgfeDJAw7iA",
-  "DVd8DuLL7SWX3rPnfxcNLBbgmxECm2NU65T9MXZAA5A3",
-  "DeoRBSpmVfwhgCmxCk8fPGQZJ1jrYpMBdtHHyYPoKAcf",
-  "6JNyHSmqMh2tTNMb6qMGUL462ex1x2EBu99rDgSwsaZv",
-  "Hf1X72pTcTvkBwaeXCq6YbEwHHwge6jG8V9rPSoNLqnE"
+  "HVnSwRqGN6YRCfPh8iEqNaUGKFN9dkdYsrMquSPxEFpC",
+  "5E9LTSK7Cfnh6a1VQRpg6JXeAqTtE2x56cUZJLF1SyrV",
+  "JCTmu3eYW14sQWtQoqhWX3G1roEbL1Y3j6DGTLE2PgQK",
+  "26XworA2a3HFHWuUSGDf2nGzUJDTrUZQR5rFc3HTmsGZ",
+  "HJU5pSDK8jBp7ExbJUa5UM7GmKKeYSbtGoxyJuw4snrH",
+  "7nDBHKvmiJ7DBZJE1sUrmb3KyFMJcDTdyHC3ueUkfZ7e",
+  "DUz8NA5jNR7Poov4spHML1DNmeRFmfR7BR4efMsuGnsA",
+  "E4Kdfe6uMGbsH8nLnQ8NvaZ7kPXADvoYEWEYMy4YJq3N",
+  "6LZXuHXzPeqMQDakqLBHvvXNRPWMZLBdoLnaiBpFLvJZ",
+  "6eu1hDaxQN51NZPrapyYMNg8Tgsmt8VJRUdwy6kUJziz"
 ];
+
+// private static NFT_MINTS = [
+//   "Aeg48DtVY8F1op2FQDaPT7qV2Ue1aEFS7gF3vLy3UXcJ",
+//   "CTxPv6rMDu9JGUKajnikyMNHTFZmU2HqGqNrEHQ5npnU",
+//   "GFEEhCxVqUsPxzS3fpLL4qumQcFQ1MfQyiCK1fc9jdVW",
+//   "HK7cqJ8YucjXxSVEabTD4m7k77kMQB6QcM1s6pdHgT72",
+//   "3tcbXzwfFSg8sKSur6uPnuLLa8iJGvr1uAsgDR6Wah9K",
+//   "8j4Y7dwrNVxBwP9Jsx2w85yXDnzrNmdcUjgfeDJAw7iA",
+//   "DVd8DuLL7SWX3rPnfxcNLBbgmxECm2NU65T9MXZAA5A3",
+//   "DeoRBSpmVfwhgCmxCk8fPGQZJ1jrYpMBdtHHyYPoKAcf",
+//   "6JNyHSmqMh2tTNMb6qMGUL462ex1x2EBu99rDgSwsaZv",
+//   "Hf1X72pTcTvkBwaeXCq6YbEwHHwge6jG8V9rPSoNLqnE"
+// ];
 
 
   public umi;
@@ -103,6 +103,7 @@ private static NFT_MINTS = [
       const escrowData = await this.validateEscrow().catch(async () => {
         console.log('Escrow not found, initializing new escrow...');
         await this.escrowSetupService.initializeEscrow();
+        await this.escrowSetupService.addDelegates();
         await this.escrowSetupService.fundEscrow();
         return await this.validateEscrow();
       });
