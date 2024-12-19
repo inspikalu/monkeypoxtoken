@@ -76,7 +76,7 @@ export class EscrowSetupService {
         escrow: this.escrowAddress,
         collection: publicKey(EscrowSetupService.CONFIG.COLLECTION),
         token: publicKey(EscrowSetupService.CONFIG.TOKEN_MINT),
-        feeLocation: EscrowSetupService.CONFIG.AUTHORITY,
+        feeLocation: publicKey(EscrowSetupService.CONFIG.AUTHORITY),
         feeAta: feeTokenAccount,
         min: EscrowSetupService.CONFIG.MIN_INDEX,
         max: EscrowSetupService.CONFIG.MAX_INDEX,
