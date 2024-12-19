@@ -27,7 +27,7 @@ export class SwapService {
   private static TOKEN_ACCOUNT = '8hXxfQgEobh3p8PqK3u9cR2GcHCosZm8t6Gb8qSSRiS3';
   private static AUTHORITY = 'AopUFgSHXJmcQARjTJex43NYcaQSMcVWmKtcYybo43Xm';
   // private static COLLECTION = '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87';
-  private static COLLECTION = '3W49jasuVCzLxoAkQ2Wt8TNb5CdqRCMDjKXnDYh8hRSc';
+  private static COLLECTION = 'NknXopdMRmM8nFYMW3BFZQzyarJBoGAdMdZANkLHsrx';
 
   private static TOKEN_PER_NFT = 100000;
   
@@ -71,13 +71,22 @@ export class SwapService {
 //   "6eu1hDaxQN51NZPrapyYMNg8Tgsmt8VJRUdwy6kUJziz"
 // ];
 
+// private static NFT_MINTS = [
+//   "6imTUZ4JFmprZ4rDdz2W11LFefZf85nZMNRR3YAnWwxW",
+//   "H1zL643Es1j9v7FenC5j86Mkjkp23LcnHmbnX6WtttAT",
+//   "3FRYGRPMjpgEQr1VeKLYPeJ4gKWuutyKtw9oiHXUBPL3",
+//   "CVGsPqoJGtEQx6CGt4V2JF7FPcoef7VZ9y2XUPuHeRck",
+//   "4ZFiyidGZ5oRjCjGhm6RrhJnLeuQHBA7i1R8H9XZzv7f"
+// ];
+
 private static NFT_MINTS = [
-  "6imTUZ4JFmprZ4rDdz2W11LFefZf85nZMNRR3YAnWwxW",
-  "H1zL643Es1j9v7FenC5j86Mkjkp23LcnHmbnX6WtttAT",
-  "3FRYGRPMjpgEQr1VeKLYPeJ4gKWuutyKtw9oiHXUBPL3",
-  "CVGsPqoJGtEQx6CGt4V2JF7FPcoef7VZ9y2XUPuHeRck",
-  "4ZFiyidGZ5oRjCjGhm6RrhJnLeuQHBA7i1R8H9XZzv7f"
+"HgJikA8uDN6zqCEGCynSLNwiPqnjvR7nSxA4YHAL341n",
+"5fBYq6GX9WWzXnFoM2jKViF4ewbkE6zpd7zzEJjcQCg3",
+"FMiCsYMTKGyUE6ZeDV8aFfqV3EVeArbhY8xRoqtWiif4",
+"4rif8BTqT7frxDK6bjH4YNCSkduy8bq7QXt1HXuSRrCw",
+"DzFXKTAqPTGyseZLXsnd2QkfJeMPuwG7SvVroXAibuWq"
 ];
+
 
 // private static NFT_MINTS = [
 //   "Aeg48DtVY8F1op2FQDaPT7qV2Ue1aEFS7gF3vLy3UXcJ",
