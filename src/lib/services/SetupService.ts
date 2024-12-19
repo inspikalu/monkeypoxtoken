@@ -155,7 +155,6 @@ export class EscrowSetupService {
       
       const delegates = [
         publicKey("5jD4WTmGYmJG6e9JjRvJX8Svk5Ph2rxqwPjrqky33rRg"),
-        this.escrowAddress,
         publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz")
       ];
 
