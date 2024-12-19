@@ -22,7 +22,7 @@ import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
 export class EscrowSetupService {
   private static readonly CONFIG = {
     // COLLECTION: '3PE2v9UG1GhWBdAu2wdJU2FFdQKPdjXkxLj46GR2gb87',
-    COLLECTION: '9mKksxtbVMcRdpfe9ZJBuuQqShywNfvdyYSkpXSxLms9',
+    COLLECTION: '3W49jasuVCzLxoAkQ2Wt8TNb5CdqRCMDjKXnDYh8hRSc',
     TOKEN_MINT: '4F9WCp4Dzv9SMf9auVQBbmXH97sVWT28mTzvqiSwgvUR',
     AUTHORITY: 'AopUFgSHXJmcQARjTJex43NYcaQSMcVWmKtcYybo43Xm',
     BASE_URI: 'https://gateway.pinata.cloud/ipfs/QmNSEeQmTXAJQYTKnpFiL9uDtK6svtvjVbzrqSwdy4N4m3',
@@ -155,7 +155,8 @@ export class EscrowSetupService {
       
       const delegates = [
         publicKey("5jD4WTmGYmJG6e9JjRvJX8Svk5Ph2rxqwPjrqky33rRg"),
-        publicKey("6Ajc185h256k1fVxuWGJCZjUXbFT8SQ17J3LZLRCLbTr")
+        publicKey("6Ajc185h256k1fVxuWGJCZjUXbFT8SQ17J3LZLRCLbTr"),
+        publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz")
       ];
 
       await addCollectionPlugin(this.umi, {
