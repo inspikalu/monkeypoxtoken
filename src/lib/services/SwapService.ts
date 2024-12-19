@@ -80,11 +80,11 @@ export class SwapService {
 // ];
 
 private static NFT_MINTS = [
-"HgJikA8uDN6zqCEGCynSLNwiPqnjvR7nSxA4YHAL341n",
-"5fBYq6GX9WWzXnFoM2jKViF4ewbkE6zpd7zzEJjcQCg3",
-"FMiCsYMTKGyUE6ZeDV8aFfqV3EVeArbhY8xRoqtWiif4",
-"4rif8BTqT7frxDK6bjH4YNCSkduy8bq7QXt1HXuSRrCw",
-"DzFXKTAqPTGyseZLXsnd2QkfJeMPuwG7SvVroXAibuWq"
+  "DFDt4tewXN3DiGG6yQqPqkQFywPtkW7ZmRQvB1EiNSJ5",
+  "8a3nxMVGgYutbnTxRaSxjJPzibuAy3XCdYao1uE66TNJ",
+  "6WqujypogxrYksxWMRuAhkA4jcR3HPwGEAnmuho19URL",
+  "F5N1BEdkryfebw4ieaMaQBCsdiT7oA6FNQYHtLFaskbt",
+  "879sooGJt1xUQWMRces5z36Nmre8aCb7auFQLqttXp4W"
 ];
 
 
