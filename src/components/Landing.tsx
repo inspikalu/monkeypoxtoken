@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaRocket,
   FaBars,
@@ -9,15 +9,17 @@ import {
   FaPaintbrush,
   FaRoad,
   FaArrowsRotate,
-  FaLock
-} from 'react-icons/fa6';
-import HomePage from './Hero';
-import NFTPage from '@/app/nft/page';
-import SwapPage from './Swap';
-import RoadmapPage from './Roadmap';
-import Footer from './Footer';
-import Page from './Page';
-import LockPage from './Lock';
+  FaLock,
+} from "react-icons/fa6";
+import HomePage from "./Hero";
+import NFTPage from "@/app/nft/page";
+import SwapPage from "./Swap";
+import RoadmapPage from "./Roadmap";
+import Footer from "./Footer";
+import Page from "./Page";
+import LockPage from "./Lock";
+import LaunchpadPage from "./Launchpad/Launchpad";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 interface NavItem {
   id: PageId;
@@ -25,7 +27,7 @@ interface NavItem {
   icon: React.ComponentType;
 }
 
-type PageId = 'home' | 'nfts' | 'swap' | 'lock' | 'roadmap';
+type PageId = "home" | "nfts" | "swap" | "lock" | "roadmap" | "launchpad";
 
 interface NavigationContextType {
   currentPage: PageId;
@@ -38,78 +40,92 @@ interface MousePosition {
 }
 
 export const NavigationContext = React.createContext<NavigationContextType>({
-  currentPage: 'home',
+  currentPage: "home",
   setCurrentPage: () => {},
 });
 
 const TokenApp: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<PageId>('home');
+  const [currentPage, setCurrentPage] = useState<PageId>("home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [mousePosition, setMousePosition] = useState<MousePosition>({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState<MousePosition>({
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent): void => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       const target = e.target as HTMLElement;
       if (
-        isMobileMenuOpen && 
-        !target.closest('.mobile-menu') && 
-        !target.closest('.menu-trigger')
+        isMobileMenuOpen &&
+        !target.closest(".mobile-menu") &&
+        !target.closest(".menu-trigger")
       ) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
   const navItems: NavItem[] = [
-    { id: 'home', label: 'Home', icon: FaRocket },
-    { id: 'nfts', label: 'NFTs', icon: FaPaintbrush },
-    { id: 'swap', label: 'Swap', icon: FaArrowsRotate },
-    { id: 'lock', label: 'Lock', icon: FaLock },
-    { id: 'roadmap', label: 'Roadmap', icon: FaRoad },
+    { id: "home", label: "Home", icon: FaRocket },
+    { id: "nfts", label: "NFTs", icon: FaPaintbrush },
+    { id: "swap", label: "Swap", icon: FaArrowsRotate },
+    { id: "lock", label: "Lock", icon: FaLock },
+    { id: "roadmap", label: "Roadmap", icon: FaRoad },
+    { id: "launchpad", label: "Launchpad", icon: FaRocket },
   ];
 
   return (
     <NavigationContext.Provider value={{ currentPage, setCurrentPage }}>
-      <div className={`min-h-screen bg-gradient-to-br from-gray-900 via-[#111827] to-gray-900 ${
-        isMobileMenuOpen ? 'overflow-hidden' : ''
-      }`}>
+      <div
+        className={`min-h-screen bg-gradient-to-br from-gray-900 via-[#111827] to-gray-900 ${
+          isMobileMenuOpen ? "overflow-hidden" : ""
+        }`}
+      >
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div 
+          <div
             className="absolute inset-0 bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(250,204,21,0.15),transparent_50%)]"
-            style={{
-              '--mouse-x': `${mousePosition.x}px`,
-              '--mouse-y': `${mousePosition.y}px`
-            } as React.CSSProperties}
+            style={
+              {
+                "--mouse-x": `${mousePosition.x}px`,
+                "--mouse-y": `${mousePosition.y}px`,
+              } as React.CSSProperties
+            }
           />
           {Array.from({ length: 20 }).map((_, i) => (
             <motion.div
               key={i}
               className="absolute bg-yellow-400/10 rounded-full"
               initial={{
-                x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : 0,
-                y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : 0,
-                scale: Math.random() * 0.5 + 0.5
+                x:
+                  typeof window !== "undefined"
+                    ? Math.random() * window.innerWidth
+                    : 0,
+                y:
+                  typeof window !== "undefined"
+                    ? Math.random() * window.innerHeight
+                    : 0,
+                scale: Math.random() * 0.5 + 0.5,
               }}
               animate={{
                 y: [null, Math.random() * -100],
-                x: Math.random() * 50
+                x: Math.random() * 50,
               }}
               transition={{
                 duration: Math.random() * 10 + 10,
                 repeat: Infinity,
-                ease: "linear"
+                ease: "linear",
               }}
               style={{
                 width: `${Math.random() * 20 + 10}px`,
@@ -142,14 +158,15 @@ const TokenApp: React.FC = () => {
                     whileTap={{ scale: 0.95 }}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       currentPage === id
-                        ? 'bg-yellow-400/20 text-yellow-400'
-                        : 'text-gray-300 hover:text-yellow-400'
+                        ? "bg-yellow-400/20 text-yellow-400"
+                        : "text-gray-300 hover:text-yellow-400"
                     }`}
                     onClick={() => setCurrentPage(id)}
                   >
                     {label}
                   </motion.button>
                 ))}
+                <WalletMultiButton />
               </div>
 
               <div className="md:hidden">
@@ -174,7 +191,7 @@ const TokenApp: React.FC = () => {
                   className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden"
                   onClick={() => setIsMobileMenuOpen(false)}
                 />
-                
+
                 <motion.div
                   initial={{ opacity: 0, x: -100 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -189,8 +206,8 @@ const TokenApp: React.FC = () => {
                         whileTap={{ scale: 0.95 }}
                         className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg mb-2 ${
                           currentPage === id
-                            ? 'bg-yellow-400/20 text-yellow-400'
-                            : 'text-gray-300 hover:text-yellow-400'
+                            ? "bg-yellow-400/20 text-yellow-400"
+                            : "text-gray-300 hover:text-yellow-400"
                         }`}
                         onClick={() => {
                           setCurrentPage(id);
@@ -201,6 +218,7 @@ const TokenApp: React.FC = () => {
                         <span>{label}</span>
                       </motion.button>
                     ))}
+                    <WalletMultiButton/>
                   </div>
                 </motion.div>
               </>
@@ -208,30 +226,36 @@ const TokenApp: React.FC = () => {
           </AnimatePresence>
         </nav>
 
-        <main className={`pt-16 ${isMobileMenuOpen ? 'blur-sm' : ''}`}>
+        <main className={`pt-16 ${isMobileMenuOpen ? "blur-sm" : ""}`}>
           <AnimatePresence mode="wait">
-            {currentPage === 'home' && <HomePage key="home" />}
-            {currentPage === 'nfts' && (
+            {currentPage === "home" && <HomePage key="home" />}
+            {currentPage === "nfts" && (
               <Page key="nfts">
                 <NFTPage />
                 <Footer />
               </Page>
             )}
-            {currentPage === 'swap' && (
+            {currentPage === "swap" && (
               <Page key="swap">
                 <SwapPage />
                 <Footer />
               </Page>
             )}
-            {currentPage === 'lock' && (
+            {currentPage === "lock" && (
               <Page key="lock">
                 <LockPage />
                 <Footer />
               </Page>
             )}
-            {currentPage === 'roadmap' && (
+            {currentPage === "roadmap" && (
               <Page key="roadmap">
                 <RoadmapPage />
+                <Footer />
+              </Page>
+            )}
+            {currentPage === "launchpad" && (
+              <Page key="launchpad">
+                <LaunchpadPage />
                 <Footer />
               </Page>
             )}
