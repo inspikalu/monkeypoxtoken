@@ -19,7 +19,7 @@ import DeploymentResult from "./DeploymentResult";
 const NFTForm = forwardRef<
   { resetForm: () => void },
   LaunchPadInterface.NFTFormProps
->(({ onSubmit }, ref) => {
+>(({}, ref) => {
   const { publicKey: walletPublicKey, wallet } = useWallet();
   const [deploymentResult, setDeploymentResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -235,4 +235,5 @@ const NFTForm = forwardRef<
   );
 });
 
+NFTForm.displayName = "NFTForm";
 export default NFTForm;

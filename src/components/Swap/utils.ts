@@ -1,18 +1,6 @@
 // src/components/Swap/utils.ts
-import {
-  findAssociatedTokenPda,
-  createTokenIfMissing,
-  transferTokens,
-} from "@metaplex-foundation/mpl-toolbox"; // Adjust import based on actual package
-import {
-  fetchEscrowV1,
-  updateEscrowV1,
-  releaseV1,
-  captureV1,
-  mplHybrid,
-  MPL_HYBRID_PROGRAM_ID,
-  initEscrowV1,
-} from "@metaplex-foundation/mpl-hybrid"; // Adjust import based on actual package
+import { findAssociatedTokenPda, createTokenIfMissing, transferTokens, } from "@metaplex-foundation/mpl-toolbox"; // Adjust import based on actual package
+import { fetchEscrowV1, updateEscrowV1, releaseV1, captureV1, mplHybrid, MPL_HYBRID_PROGRAM_ID, initEscrowV1, } from "@metaplex-foundation/mpl-hybrid"; // Adjust import based on actual package
 import {
   FundEscrowParams,
   SwapNftToTokensParams,
@@ -24,39 +12,17 @@ import {
 } from "./swap-types";
 import { clusterApiUrl } from "@solana/web3.js";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import {
-  generateSigner,
-  publicKey,
-  sol,
-  signerIdentity,
-} from "@metaplex-foundation/umi";
-import {
-  fetchAllDigitalAssetWithTokenByOwner,
-  mplTokenMetadata,
-} from "@metaplex-foundation/mpl-token-metadata";
+import { publicKey, signerIdentity } from "@metaplex-foundation/umi";
+import { fetchAllDigitalAssetWithTokenByOwner, mplTokenMetadata, } from "@metaplex-foundation/mpl-token-metadata";
 import { fetchAssetsByOwner } from "@metaplex-foundation/mpl-core";
-import {
-  string,
-  base58,
-  publicKey as publicKeySerializer,
-} from "@metaplex-foundation/umi/serializers";
+import { string, base58, publicKey as publicKeySerializer, } from "@metaplex-foundation/umi/serializers";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 
 // Function that adds zeros to a number, needed for adding the correct amount of decimals
 function addZeros(num: number, numZeros: number): number {
   return num * Math.pow(10, numZeros);
 }
-export async function createEscrow({
-  rpcEndpoint,
-  escrowName,
-  collectionBaseUrl,
-  maxUri = 15,
-  minUri = 0,
-  path = 0,
-  collectionAddress,
-  fTokenAddress,
-  wallet,
-}: CreateEscrowParams) {
+export async function createEscrow({ rpcEndpoint, escrowName, collectionBaseUrl, maxUri = 15, minUri = 0, path = 0, collectionAddress, fTokenAddress, wallet, }: CreateEscrowParams) {
   try {
     const umi = createUmi(rpcEndpoint)
       .use(mplHybrid())
@@ -64,7 +30,7 @@ export async function createEscrow({
       .use(walletAdapterIdentity(wallet));
 
     console.log(umi.identity.publicKey);
-    let signer = umi.identity;
+    const signer = umi.identity;
     umi.use(signerIdentity(signer));
 
     const name = escrowName; // The name of the escrow
@@ -100,7 +66,7 @@ export async function createEscrow({
 
     /// Step 3: Create the Escrow
     const escrowData = await fetchEscrowV1(umi, escrowAddressPublicKey);
-    console.log(escrowData)
+    console.log(escrowData);
     if (!escrowData) {
       const initEscrowTx = await initEscrowV1(umi, {
         name,
@@ -279,7 +245,7 @@ export async function getNonFungibleTokensForWallet(
     const ownerPublicKey = publicKey(walletAddress);
     console.log("Fetching nfts....");
     const allNFTs = await fetchAssetsByOwner(umi, ownerPublicKey);
-    let nfts: UserNFTokens[] = [];
+    const nfts: UserNFTokens[] = [];
     allNFTs.forEach((nft) => {
       nfts.push({
         mintAddress: nft.publicKey,
@@ -314,7 +280,7 @@ export async function getFungibleTokensForWallet(
       umi,
       ownerPublicKey
     );
-    let nfts: UserFTokens[] = [];
+    const nfts: UserFTokens[] = [];
     allNFTs.forEach((nft) => {
       nfts.push({
         mintAddress: nft.publicKey,

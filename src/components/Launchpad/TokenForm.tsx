@@ -4,19 +4,13 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import {
-  MPL_TOKEN_METADATA_PROGRAM_ID,
   createV1,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
-import {
-  createMint,
-  mintTokensTo,
-  createToken,
-} from "@metaplex-foundation/mpl-toolbox";
+import { mintTokensTo, createToken } from "@metaplex-foundation/mpl-toolbox";
 import {
   generateSigner,
   percentAmount,
-  some,
   publicKey,
 } from "@metaplex-foundation/umi";
 import { FaRocket } from "react-icons/fa6";
@@ -30,7 +24,7 @@ import { mplToolbox } from "@metaplex-foundation/mpl-toolbox";
 const TokenForm = forwardRef<
   { resetForm: () => void },
   LaunchPadInterface.TokenFormProps
->(({ onSubmit, isLoading, setIsLoading }, ref) => {
+>(({ isLoading, setIsLoading }, ref) => {
   const { publicKey: walletPublicKey, wallet } = useWallet();
   const [deploymentResult, setDeploymentResult] =
     useState<LaunchPadInterface.TokenDeploymentResponse | null>(null);
@@ -252,4 +246,5 @@ const TokenForm = forwardRef<
   );
 });
 
+TokenForm.displayName = "TokenForm";
 export default TokenForm;

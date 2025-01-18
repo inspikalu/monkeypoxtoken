@@ -11,8 +11,6 @@ import {
 import { UserNFTokens, UserFTokens } from "./swap-types";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { FaSpinner } from "react-icons/fa";
-import FormField from "../Launchpad/FormField";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { clusterApiUrl } from "@solana/web3.js";
 import { mplHybrid } from "@metaplex-foundation/mpl-hybrid";
@@ -24,8 +22,8 @@ const Swap = () => {
   const { publicKey, connected } = useWallet();
   const [userFTokens, setUserFTokens] = useState<UserFTokens[]>([]);
   const [userNFTokens, setUserNFTokens] = useState<UserNFTokens[]>([]);
-  const [isNftToToken, setIsNftToToken] = useState(true);
-  const [tokensPerNft] = useState(10); // Example value, adjust as needed
+  const [isNftToToken] = useState(true);
+  // const [tokensPerNft] = useState(10); // Example value, adjust as needed
 
   const wallet = useWallet();
 

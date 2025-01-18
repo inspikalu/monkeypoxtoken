@@ -1,8 +1,15 @@
 // components/NftPreviewModal.tsx
-import { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaSpinner, FaImage, FaRedo, FaExpand, FaCompress } from 'react-icons/fa';
-import type { NftMetadata } from '@/lib/hooks/useSwap';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaTimes,
+  FaSpinner,
+  FaImage,
+  FaRedo,
+  FaExpand,
+  FaCompress,
+} from "react-icons/fa";
+import type { NftMetadata } from "@/lib/hooks/useSwap";
 
 interface NftPreviewModalProps {
   nft: NftMetadata | null;
@@ -21,14 +28,14 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         if (isZoomed) setIsZoomed(false);
         else onClose();
       }
     };
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
   }, [isZoomed, onClose]);
 
   if (!nft) return null;
@@ -41,13 +48,13 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
 
   const handleRetry = async () => {
     if (retryCount >= MAX_RETRIES || !nft.image) return;
-    
+
     setIsRetrying(true);
-    setRetryCount(prev => prev + 1);
+    setRetryCount((prev) => prev + 1);
 
     // Add a small delay before retrying
-    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-    
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+
     setImageLoading(true);
     setImageError(false);
   };
@@ -64,15 +71,17 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={() => isZoomed ? setIsZoomed(false) : onClose()}
+        onClick={() => (isZoomed ? setIsZoomed(false) : onClose())}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className={`bg-gray-800 rounded-xl p-6 ${isZoomed ? 'w-[90vw] h-[90vh]' : 'max-w-lg w-full'} 
+          className={`bg-gray-800 rounded-xl p-6 ${
+            isZoomed ? "w-[90vw] h-[90vh]" : "max-w-lg w-full"
+          } 
             transition-all duration-300 ease-in-out`}
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-2">
@@ -109,14 +118,16 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
             </div>
           </div>
 
-          <div className={`relative rounded-lg overflow-hidden bg-gray-900 
-            ${isZoomed ? 'h-[calc(90vh-200px)]' : 'aspect-square'}`}>
+          <div
+            className={`relative rounded-lg overflow-hidden bg-gray-900 
+            ${isZoomed ? "h-[calc(90vh-200px)]" : "aspect-square"}`}
+          >
             {imageLoading && !imageError && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <FaSpinner className="animate-spin text-4xl text-yellow-400" />
               </div>
             )}
-            
+
             {imageError ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
                 <FaImage className="text-4xl mb-2" />
@@ -126,7 +137,10 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     animate={isRetrying ? { rotate: 360 } : {}}
-                    transition={{ duration: 1, repeat: isRetrying ? Infinity : 0 }}
+                    transition={{
+                      duration: 1,
+                      repeat: isRetrying ? Infinity : 0,
+                    }}
                     onClick={handleRetry}
                     disabled={isRetrying}
                     className="flex items-center gap-2 px-3 py-1.5 bg-yellow-400/10 hover:bg-yellow-400/20 
@@ -134,7 +148,7 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
                   >
                     <FaRedo className="text-sm" />
                     <span className="text-sm">
-                      {isRetrying ? 'Retrying...' : 'Retry'}
+                      {isRetrying ? "Retrying..." : "Retry"}
                     </span>
                   </motion.button>
                 )}
@@ -150,7 +164,9 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
                   key={`${nft.image}-${retryCount}`}
                   src={nft.image}
                   alt={nft.name}
-                  className={`${isZoomed ? 'object-contain' : 'object-cover'} w-full h-full`}
+                  className={`${
+                    isZoomed ? "object-contain" : "object-cover"
+                  } w-full h-full`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: imageLoading ? 0 : 1 }}
                   transition={{ duration: 0.3 }}
@@ -168,7 +184,9 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
 
             {nft.attributes && nft.attributes.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-400">Attributes</h4>
+                <h4 className="text-sm font-semibold text-gray-400">
+                  Attributes
+                </h4>
                 <div className="grid grid-cols-2 gap-2">
                   {nft.attributes.map((attr, index) => (
                     <motion.div
@@ -178,7 +196,9 @@ export const NftPreviewModal = ({ nft, onClose }: NftPreviewModalProps) => {
                       transition={{ delay: index * 0.1 }}
                       className="bg-gray-700/50 rounded-lg p-2"
                     >
-                      <div className="text-xs text-gray-400">{attr.trait_type}</div>
+                      <div className="text-xs text-gray-400">
+                        {attr.trait_type}
+                      </div>
                       <div className="text-sm text-white">{attr.value}</div>
                     </motion.div>
                   ))}

@@ -45,7 +45,7 @@ const getInitialFormState = (
 const CollectionForm = forwardRef<
   { resetForm: () => void },
   LaunchPadInterface.CollectionFormProps
->(({ onSubmit }, ref) => {
+>(({}, ref) => {
   const { publicKey: walletPublicKey, wallet } = useWallet();
   const [deploymentResult, setDeploymentResult] = useState<any | null>(null);
 
@@ -299,4 +299,5 @@ const CollectionForm = forwardRef<
   );
 });
 
+CollectionForm.displayName = "CollectionForm";
 export default CollectionForm;
