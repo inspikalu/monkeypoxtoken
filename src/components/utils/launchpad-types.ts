@@ -20,6 +20,7 @@ export interface TokenDeploymentResponse {
   transaction: string; // Added to handle the returned transaction
   mint: string;
   message: string;
+  network: clusterUrl
 }
 
 export interface CollectionDeploymentResponse {
@@ -47,7 +48,7 @@ export interface Creator {
 export interface CollectionFormData {
   name: string;
   uri: string;
-  privateKey: string;
+  // privateKey: string;
   royaltyBasisPoints: number;
   creators: Creator[];
   rpcEndpoint: string;
@@ -110,7 +111,6 @@ export interface NFTMetadata {
 
 export interface NFTFormData {
   rpcEndpoint: string;
-  privateKey: string;
   collectionMint: string;
   metadata: NFTMetadata;
   recipient?: string;

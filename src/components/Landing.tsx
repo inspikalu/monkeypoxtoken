@@ -13,7 +13,8 @@ import {
 } from "react-icons/fa6";
 import HomePage from "./Hero";
 import NFTPage from "@/app/nft/page";
-import SwapPage from "./Swap";
+import SwapPage2 from "./Swap";
+import SwapPage from "./Swap/Swap";
 import RoadmapPage from "./Roadmap";
 import Footer from "./Footer";
 import Page from "./Page";
@@ -27,7 +28,16 @@ interface NavItem {
   icon: React.ComponentType;
 }
 
-type PageId = "home" | "nfts" | "swap" | "lock" | "roadmap" | "launchpad";
+// type PageId =
+//   | "home"
+//   | "nfts"
+//   | "swap"
+//   | "swap2"
+//   | "lock"
+//   | "roadmap"
+//   | "launchpad";
+
+type PageId = "home" | "nfts" | "swap" | "launchpad";
 
 interface NavigationContextType {
   currentPage: PageId;
@@ -81,8 +91,9 @@ const TokenApp: React.FC = () => {
     { id: "home", label: "Home", icon: FaRocket },
     { id: "nfts", label: "NFTs", icon: FaPaintbrush },
     { id: "swap", label: "Swap", icon: FaArrowsRotate },
-    { id: "lock", label: "Lock", icon: FaLock },
-    { id: "roadmap", label: "Roadmap", icon: FaRoad },
+    // { id: "swap2", label: "Swap2", icon: FaArrowsRotate },
+    // { id: "lock", label: "Lock", icon: FaLock },
+    // { id: "roadmap", label: "Roadmap", icon: FaRoad },
     { id: "launchpad", label: "Launchpad", icon: FaRocket },
   ];
 
@@ -218,7 +229,7 @@ const TokenApp: React.FC = () => {
                         <span>{label}</span>
                       </motion.button>
                     ))}
-                    <WalletMultiButton/>
+                    <WalletMultiButton />
                   </div>
                 </motion.div>
               </>
@@ -241,6 +252,12 @@ const TokenApp: React.FC = () => {
                 <Footer />
               </Page>
             )}
+            {/* {currentPage === "swap2" && (
+              <Page key="swap2">
+                <SwapPage2 />
+                <Footer />
+              </Page>
+            )}
             {currentPage === "lock" && (
               <Page key="lock">
                 <LockPage />
@@ -252,7 +269,7 @@ const TokenApp: React.FC = () => {
                 <RoadmapPage />
                 <Footer />
               </Page>
-            )}
+            )} */}
             {currentPage === "launchpad" && (
               <Page key="launchpad">
                 <LaunchpadPage />
