@@ -1,12 +1,6 @@
 //src/components/Launchpad/Launchpad.tsx
-import {
-  useState,
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  useCallback,
-} from "react";
-import { FaRocket, FaCopy, FaCoins, FaImages, FaImage } from "react-icons/fa";
+import { useState, useRef } from "react";
+import { FaCoins, FaImages, FaImage } from "react-icons/fa";
 import { toast } from "sonner";
 import * as LaunchPadInterface from "../utils/launchpad-types";
 import {
@@ -14,10 +8,8 @@ import {
   createCollection,
   mintNFT,
 } from "../utils/collection-apis";
-import { clusterUrl } from "../utils/launchpad-types";
 import { SonnerStyle } from "../utils/consts";
 import { useDeploymentProgress } from "@/lib/hooks/useDeploymentProgress";
-import FormField from "./FormField";
 import TokenForm from "./TokenForm";
 import CollectionForm from "./CollectionForm";
 import NFTForm from "./NFTForm";
@@ -35,7 +27,7 @@ const Launchpad: React.FC = () => {
     | null
   >(null);
 
-  const { progress, connect, disconnect } = useDeploymentProgress();
+  const { connect, disconnect } = useDeploymentProgress();
   const formRef = useRef<{ resetForm: () => void } | null>(null);
   const collectionFormRef = useRef<{ resetForm: () => void } | null>(null);
   const nftFormRef = useRef<{ resetForm: () => void } | null>(null);
@@ -46,7 +38,7 @@ const Launchpad: React.FC = () => {
   ): Promise<void> => {
     try {
       // createToken function already includes setIsLoading internally
-      const { data, clientId } = await createToken(formData, setIsLoading);
+      const { data } = await createToken(formData, setIsLoading);
 
       // Connect to SSE with the clientId returned from createToken
       // connect(clientId);

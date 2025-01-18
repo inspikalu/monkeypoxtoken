@@ -7,7 +7,6 @@ import {
   NFTFormData,
 } from "./launchpad-types";
 import { SetStateAction } from "react";
-import { toast } from "sonner";
 
 const api = axios.create({
   baseURL: BASE_URL,

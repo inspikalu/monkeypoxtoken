@@ -2,23 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FaRocket,
-  FaBars,
-  FaX,
-  FaPaintbrush,
-  FaRoad,
-  FaArrowsRotate,
-  FaLock,
-} from "react-icons/fa6";
+import { FaRocket, FaBars, FaX, FaArrowsRotate } from "react-icons/fa6";
 import HomePage from "./Hero";
-import NFTPage from "@/app/nft/page";
-import SwapPage2 from "./Swap";
+// import SwapPage2 from "./Swap";
 import SwapPage from "./Swap/Swap";
-import RoadmapPage from "./Roadmap";
 import Footer from "./Footer";
 import Page from "./Page";
-import LockPage from "./Lock";
 import LaunchpadPage from "./Launchpad/Launchpad";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
@@ -37,7 +26,7 @@ interface NavItem {
 //   | "roadmap"
 //   | "launchpad";
 
-type PageId = "home" | "nfts" | "swap" | "launchpad";
+type PageId = "home" | "swap" | "launchpad";
 
 interface NavigationContextType {
   currentPage: PageId;
@@ -89,7 +78,6 @@ const TokenApp: React.FC = () => {
 
   const navItems: NavItem[] = [
     { id: "home", label: "Home", icon: FaRocket },
-    { id: "nfts", label: "NFTs", icon: FaPaintbrush },
     { id: "swap", label: "Swap", icon: FaArrowsRotate },
     // { id: "swap2", label: "Swap2", icon: FaArrowsRotate },
     // { id: "lock", label: "Lock", icon: FaLock },
@@ -240,12 +228,6 @@ const TokenApp: React.FC = () => {
         <main className={`pt-16 ${isMobileMenuOpen ? "blur-sm" : ""}`}>
           <AnimatePresence mode="wait">
             {currentPage === "home" && <HomePage key="home" />}
-            {currentPage === "nfts" && (
-              <Page key="nfts">
-                <NFTPage />
-                <Footer />
-              </Page>
-            )}
             {currentPage === "swap" && (
               <Page key="swap">
                 <SwapPage />
@@ -255,18 +237,6 @@ const TokenApp: React.FC = () => {
             {/* {currentPage === "swap2" && (
               <Page key="swap2">
                 <SwapPage2 />
-                <Footer />
-              </Page>
-            )}
-            {currentPage === "lock" && (
-              <Page key="lock">
-                <LockPage />
-                <Footer />
-              </Page>
-            )}
-            {currentPage === "roadmap" && (
-              <Page key="roadmap">
-                <RoadmapPage />
                 <Footer />
               </Page>
             )} */}

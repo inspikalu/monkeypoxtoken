@@ -1,17 +1,16 @@
 // lib/services/SwapService.ts
-import { 
-  releaseV1, 
-  captureV1, 
-  fetchEscrowV1 
+import {
+  releaseV1,
+  captureV1,
+  fetchEscrowV1
 } from '@metaplex-foundation/mpl-hybrid';
-import { 
-  fetchToken, 
+import {
+  fetchToken,
   findAssociatedTokenPda,
   createTokenIfMissing
 } from '@metaplex-foundation/mpl-toolbox';
 import { publicKey } from '@metaplex-foundation/umi';
 import { EscrowSetupService } from './SetupService';
-import { toast } from 'react-hot-toast';
 import { fetchAsset, fetchCollection } from '@metaplex-foundation/mpl-core';
 
 
@@ -30,7 +29,7 @@ export class SwapService {
   private static COLLECTION = 'NknXopdMRmM8nFYMW3BFZQzyarJBoGAdMdZANkLHsrx';
 
   private static TOKEN_PER_NFT = 100000;
-  
+
   // List of NFTs available for swapping
   // private static NFT_MINTS = [
   //   "3nzT4F9kZQr5FaPVVkMu7yzsc9iMKGzhB1pYXwmy5tVH",
@@ -45,61 +44,61 @@ export class SwapService {
   //   "CvVHhCx6zKXjmKTHSD4kZeVksB22ffz3u948ttHS87sG"
   // ];
 
-//   private static NFT_MINTS = [
-//   "J7e5vQdcVbk5m65gYTUYvT3ewZBzsG8kgLd9ZbRK3GTh",
-//   "5btViSvacRmnprZ2z9fgMvcE7CJaX2YX7JvUWtAvQHYv",
-//   "D1Cnu1dF98cbCrn4uXzh63JCiCNn2537u2VtbaGHZ9Bv",
-//   "3eyi7dwBD2moq5j3zmmmt1FoeeyfUST8Kt2YYD6trbMB",
-//   "E6Zvr6GvUikFBi7LUaKzMXXsBzaMeKm4H4uzcm92utVV",
-//   "8d86zDhXrBU4RNxEzoixQR2HpxPbSxahhxMgUahFiQTj",
-//   "8yxAU6iFWffQvkEfGQn2qtUPXVa4hy5RXCP5LvikNyjf",
-//   "2PJzcP4UaYwDdYXRexq57v3xGobKvrtBbtUU6Zm2bJhK",
-//   "7XL5QC3gap5Bqqabkj4e48e9hxmyrSKRXkxTKsjxssw",
-//   "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
-// ];
+  //   private static NFT_MINTS = [
+  //   "J7e5vQdcVbk5m65gYTUYvT3ewZBzsG8kgLd9ZbRK3GTh",
+  //   "5btViSvacRmnprZ2z9fgMvcE7CJaX2YX7JvUWtAvQHYv",
+  //   "D1Cnu1dF98cbCrn4uXzh63JCiCNn2537u2VtbaGHZ9Bv",
+  //   "3eyi7dwBD2moq5j3zmmmt1FoeeyfUST8Kt2YYD6trbMB",
+  //   "E6Zvr6GvUikFBi7LUaKzMXXsBzaMeKm4H4uzcm92utVV",
+  //   "8d86zDhXrBU4RNxEzoixQR2HpxPbSxahhxMgUahFiQTj",
+  //   "8yxAU6iFWffQvkEfGQn2qtUPXVa4hy5RXCP5LvikNyjf",
+  //   "2PJzcP4UaYwDdYXRexq57v3xGobKvrtBbtUU6Zm2bJhK",
+  //   "7XL5QC3gap5Bqqabkj4e48e9hxmyrSKRXkxTKsjxssw",
+  //   "6TKuMWgcQWCYryZmyemK7cNF69MrewdqEZfNPykieyKF"
+  // ];
 
-// private static NFT_MINTS = [
-//   "HVnSwRqGN6YRCfPh8iEqNaUGKFN9dkdYsrMquSPxEFpC",
-//   "5E9LTSK7Cfnh6a1VQRpg6JXeAqTtE2x56cUZJLF1SyrV",
-//   "JCTmu3eYW14sQWtQoqhWX3G1roEbL1Y3j6DGTLE2PgQK",
-//   "26XworA2a3HFHWuUSGDf2nGzUJDTrUZQR5rFc3HTmsGZ",
-//   "HJU5pSDK8jBp7ExbJUa5UM7GmKKeYSbtGoxyJuw4snrH",
-//   "7nDBHKvmiJ7DBZJE1sUrmb3KyFMJcDTdyHC3ueUkfZ7e",
-//   "DUz8NA5jNR7Poov4spHML1DNmeRFmfR7BR4efMsuGnsA",
-//   "E4Kdfe6uMGbsH8nLnQ8NvaZ7kPXADvoYEWEYMy4YJq3N",
-//   "6LZXuHXzPeqMQDakqLBHvvXNRPWMZLBdoLnaiBpFLvJZ",
-//   "6eu1hDaxQN51NZPrapyYMNg8Tgsmt8VJRUdwy6kUJziz"
-// ];
+  // private static NFT_MINTS = [
+  //   "HVnSwRqGN6YRCfPh8iEqNaUGKFN9dkdYsrMquSPxEFpC",
+  //   "5E9LTSK7Cfnh6a1VQRpg6JXeAqTtE2x56cUZJLF1SyrV",
+  //   "JCTmu3eYW14sQWtQoqhWX3G1roEbL1Y3j6DGTLE2PgQK",
+  //   "26XworA2a3HFHWuUSGDf2nGzUJDTrUZQR5rFc3HTmsGZ",
+  //   "HJU5pSDK8jBp7ExbJUa5UM7GmKKeYSbtGoxyJuw4snrH",
+  //   "7nDBHKvmiJ7DBZJE1sUrmb3KyFMJcDTdyHC3ueUkfZ7e",
+  //   "DUz8NA5jNR7Poov4spHML1DNmeRFmfR7BR4efMsuGnsA",
+  //   "E4Kdfe6uMGbsH8nLnQ8NvaZ7kPXADvoYEWEYMy4YJq3N",
+  //   "6LZXuHXzPeqMQDakqLBHvvXNRPWMZLBdoLnaiBpFLvJZ",
+  //   "6eu1hDaxQN51NZPrapyYMNg8Tgsmt8VJRUdwy6kUJziz"
+  // ];
 
-// private static NFT_MINTS = [
-//   "6imTUZ4JFmprZ4rDdz2W11LFefZf85nZMNRR3YAnWwxW",
-//   "H1zL643Es1j9v7FenC5j86Mkjkp23LcnHmbnX6WtttAT",
-//   "3FRYGRPMjpgEQr1VeKLYPeJ4gKWuutyKtw9oiHXUBPL3",
-//   "CVGsPqoJGtEQx6CGt4V2JF7FPcoef7VZ9y2XUPuHeRck",
-//   "4ZFiyidGZ5oRjCjGhm6RrhJnLeuQHBA7i1R8H9XZzv7f"
-// ];
+  // private static NFT_MINTS = [
+  //   "6imTUZ4JFmprZ4rDdz2W11LFefZf85nZMNRR3YAnWwxW",
+  //   "H1zL643Es1j9v7FenC5j86Mkjkp23LcnHmbnX6WtttAT",
+  //   "3FRYGRPMjpgEQr1VeKLYPeJ4gKWuutyKtw9oiHXUBPL3",
+  //   "CVGsPqoJGtEQx6CGt4V2JF7FPcoef7VZ9y2XUPuHeRck",
+  //   "4ZFiyidGZ5oRjCjGhm6RrhJnLeuQHBA7i1R8H9XZzv7f"
+  // ];
 
-private static NFT_MINTS = [
-  "DFDt4tewXN3DiGG6yQqPqkQFywPtkW7ZmRQvB1EiNSJ5",
-  "8a3nxMVGgYutbnTxRaSxjJPzibuAy3XCdYao1uE66TNJ",
-  "6WqujypogxrYksxWMRuAhkA4jcR3HPwGEAnmuho19URL",
-  "F5N1BEdkryfebw4ieaMaQBCsdiT7oA6FNQYHtLFaskbt",
-  "879sooGJt1xUQWMRces5z36Nmre8aCb7auFQLqttXp4W"
-];
+  private static NFT_MINTS = [
+    "DFDt4tewXN3DiGG6yQqPqkQFywPtkW7ZmRQvB1EiNSJ5",
+    "8a3nxMVGgYutbnTxRaSxjJPzibuAy3XCdYao1uE66TNJ",
+    "6WqujypogxrYksxWMRuAhkA4jcR3HPwGEAnmuho19URL",
+    "F5N1BEdkryfebw4ieaMaQBCsdiT7oA6FNQYHtLFaskbt",
+    "879sooGJt1xUQWMRces5z36Nmre8aCb7auFQLqttXp4W"
+  ];
 
 
-// private static NFT_MINTS = [
-//   "Aeg48DtVY8F1op2FQDaPT7qV2Ue1aEFS7gF3vLy3UXcJ",
-//   "CTxPv6rMDu9JGUKajnikyMNHTFZmU2HqGqNrEHQ5npnU",
-//   "GFEEhCxVqUsPxzS3fpLL4qumQcFQ1MfQyiCK1fc9jdVW",
-//   "HK7cqJ8YucjXxSVEabTD4m7k77kMQB6QcM1s6pdHgT72",
-//   "3tcbXzwfFSg8sKSur6uPnuLLa8iJGvr1uAsgDR6Wah9K",
-//   "8j4Y7dwrNVxBwP9Jsx2w85yXDnzrNmdcUjgfeDJAw7iA",
-//   "DVd8DuLL7SWX3rPnfxcNLBbgmxECm2NU65T9MXZAA5A3",
-//   "DeoRBSpmVfwhgCmxCk8fPGQZJ1jrYpMBdtHHyYPoKAcf",
-//   "6JNyHSmqMh2tTNMb6qMGUL462ex1x2EBu99rDgSwsaZv",
-//   "Hf1X72pTcTvkBwaeXCq6YbEwHHwge6jG8V9rPSoNLqnE"
-// ];
+  // private static NFT_MINTS = [
+  //   "Aeg48DtVY8F1op2FQDaPT7qV2Ue1aEFS7gF3vLy3UXcJ",
+  //   "CTxPv6rMDu9JGUKajnikyMNHTFZmU2HqGqNrEHQ5npnU",
+  //   "GFEEhCxVqUsPxzS3fpLL4qumQcFQ1MfQyiCK1fc9jdVW",
+  //   "HK7cqJ8YucjXxSVEabTD4m7k77kMQB6QcM1s6pdHgT72",
+  //   "3tcbXzwfFSg8sKSur6uPnuLLa8iJGvr1uAsgDR6Wah9K",
+  //   "8j4Y7dwrNVxBwP9Jsx2w85yXDnzrNmdcUjgfeDJAw7iA",
+  //   "DVd8DuLL7SWX3rPnfxcNLBbgmxECm2NU65T9MXZAA5A3",
+  //   "DeoRBSpmVfwhgCmxCk8fPGQZJ1jrYpMBdtHHyYPoKAcf",
+  //   "6JNyHSmqMh2tTNMb6qMGUL462ex1x2EBu99rDgSwsaZv",
+  //   "Hf1X72pTcTvkBwaeXCq6YbEwHHwge6jG8V9rPSoNLqnE"
+  // ];
 
 
   public umi;
@@ -147,7 +146,7 @@ private static NFT_MINTS = [
   private async validateEscrow() {
     try {
       console.log('Validating escrow configuration...');
-      
+
       const escrowData = await fetchEscrowV1(
         this.umi,
         this.escrowSetupService.escrowAddress
@@ -201,49 +200,49 @@ private static NFT_MINTS = [
       await this.setupAndValidateEscrow();
 
       // Get token account for the wallet
-    // Get and create token account for the wallet if it doesn't exist
-    const walletTokenAccount = findAssociatedTokenPda(this.umi, {
-      mint: publicKey(SwapService.TOKEN_MINT),
-      owner: this.umi.identity.publicKey
-    });
+      // Get and create token account for the wallet if it doesn't exist
+      const walletTokenAccount = findAssociatedTokenPda(this.umi, {
+        mint: publicKey(SwapService.TOKEN_MINT),
+        owner: this.umi.identity.publicKey
+      });
 
-    // Get fee wallet's token account
-    const feeTokenAccount = findAssociatedTokenPda(this.umi, {
-      mint: publicKey(SwapService.TOKEN_MINT),
-      owner: publicKey(SwapService.AUTHORITY)
-    });
+      // Get fee wallet's token account
+      const feeTokenAccount = findAssociatedTokenPda(this.umi, {
+        mint: publicKey(SwapService.TOKEN_MINT),
+        owner: publicKey(SwapService.AUTHORITY)
+      });
 
-    console.log('Creating token account if needed...');
-    const createTokenAccountTx = await createTokenIfMissing(this.umi, {
-      mint: publicKey(SwapService.TOKEN_MINT),
-      owner: this.umi.identity.publicKey,
-      token: walletTokenAccount,
-    });
+      console.log('Creating token account if needed...');
+      const createTokenAccountTx = await createTokenIfMissing(this.umi, {
+        mint: publicKey(SwapService.TOKEN_MINT),
+        owner: this.umi.identity.publicKey,
+        token: walletTokenAccount,
+      });
 
-    // Wait for token account creation to be confirmed
-    if (createTokenAccountTx.items.length > 0) {
-      await createTokenAccountTx.sendAndConfirm(this.umi);
-    }
+      // Wait for token account creation to be confirmed
+      if (createTokenAccountTx.items.length > 0) {
+        await createTokenAccountTx.sendAndConfirm(this.umi);
+      }
 
-    // Verify the token account exists and fetch its data
-    console.log('Verifying token account...');
-    const tokenAccount = await fetchToken(this.umi, walletTokenAccount);
-    console.log('Token account data:', tokenAccount);
+      // Verify the token account exists and fetch its data
+      console.log('Verifying token account...');
+      const tokenAccount = await fetchToken(this.umi, walletTokenAccount);
+      console.log('Token account data:', tokenAccount);
 
-    // Get escrow data to verify configuration
-    console.log('Fetching escrow data...');
-    const escrowData = await fetchEscrowV1(this.umi, this.escrowSetupService.escrowAddress);
-    console.log('Escrow data:', escrowData);
+      // Get escrow data to verify configuration
+      console.log('Fetching escrow data...');
+      const escrowData = await fetchEscrowV1(this.umi, this.escrowSetupService.escrowAddress);
+      console.log('Escrow data:', escrowData);
 
-    console.log('Executing release transaction with params:', {
-      owner: this.umi.identity.publicKey.toString(),
-      escrow: this.escrowSetupService.escrowAddress.toString(),
-      asset: nftMint,
-      collection: SwapService.COLLECTION,
-      feeProjectAccount: SwapService.AUTHORITY,
-      feeTokenAccount: feeTokenAccount,
-      token: this.escrowSetupService.token.toString()
-    });
+      console.log('Executing release transaction with params:', {
+        owner: this.umi.identity.publicKey.toString(),
+        escrow: this.escrowSetupService.escrowAddress.toString(),
+        asset: nftMint,
+        collection: SwapService.COLLECTION,
+        feeProjectAccount: SwapService.AUTHORITY,
+        feeTokenAccount: feeTokenAccount,
+        token: this.escrowSetupService.token.toString()
+      });
       // Execute the NFT to tokens swap
       const tx = await releaseV1(this.umi, {
         owner: this.umi.identity,
@@ -267,7 +266,8 @@ private static NFT_MINTS = [
     try {
       await this.setupAndValidateEscrow();
 
-      const walletTokenAccount = findAssociatedTokenPda(this.umi, {
+      findAssociatedTokenPda(this.umi, {
+        // const walletTokenAccount = findAssociatedTokenPda(this.umi, {
         mint: publicKey(SwapService.TOKEN_MINT),
         owner: this.umi.identity.publicKey
       });
@@ -312,7 +312,7 @@ private static NFT_MINTS = [
         mint: publicKey(SwapService.TOKEN_MINT),
         owner: this.umi.identity.publicKey
       });
-  
+
       try {
         const token = await fetchToken(this.umi, tokenAccount);
         return Number(token.amount);
@@ -334,8 +334,9 @@ private static NFT_MINTS = [
   async verifyAsset(nftMint: string) {
     try {
       // Verify the asset exists and belongs to the collection
-      const asset = await fetchAsset(this.umi, publicKey(nftMint));
-      
+      await fetchAsset(this.umi, publicKey(nftMint));
+      // const asset = await fetchAsset(this.umi, publicKey(nftMint));
+
       // Check if the asset belongs to our collection
       // if (!asset.collection || asset.collection.toString() !== SwapService.COLLECTION) {
       //   throw new Error('Asset does not belong to the correct collection');
@@ -352,7 +353,7 @@ private static NFT_MINTS = [
     try {
       console.log('Verifying Core collection...');
       const collection = publicKey(SwapService.COLLECTION);
-      
+
       // Fetch collection data using Core's method
       const collectionData = await fetchCollection(this.umi, collection);
       console.log('Collection data:', collectionData);

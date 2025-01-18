@@ -1,11 +1,11 @@
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
-import { 
-  mplHybrid, 
+import {
+  mplHybrid,
   initEscrowV1,
   fetchEscrowV1,
   MPL_HYBRID_PROGRAM_ID
 } from '@metaplex-foundation/mpl-hybrid';
-import { 
+import {
   createTokenIfMissing,
   transferTokens,
   findAssociatedTokenPda,
@@ -14,7 +14,7 @@ import {
   mplToolbox
 } from '@metaplex-foundation/mpl-toolbox';
 import { web3JsEddsa } from '@metaplex-foundation/umi-eddsa-web3js';
-import { publicKey, publicKeyBytes, sol } from '@metaplex-foundation/umi';
+import { publicKey, sol } from '@metaplex-foundation/umi';
 import { string, publicKey as publicKeySerializer, } from '@metaplex-foundation/umi/serializers';
 import { addCollectionPlugin, mplCore } from '@metaplex-foundation/mpl-core';
 import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
@@ -63,7 +63,7 @@ export class EscrowSetupService {
   async initializeEscrow() {
     try {
       console.log('Initializing escrow with Core collection...See address below:');
-        console.log(this.escrowAddress)
+      console.log(this.escrowAddress)
       // Get fee wallet's token account
       const feeTokenAccount = findAssociatedTokenPda(this.umi, {
         mint: publicKey(EscrowSetupService.CONFIG.TOKEN_MINT),
@@ -89,7 +89,7 @@ export class EscrowSetupService {
       console.log('Confirming initialize tx next');
       const signature = await tx.sendAndConfirm(this.umi);
       console.log('Escrow initialized successfully:', signature);
-      
+
       return signature;
     } catch (error) {
       console.error('Failed to initialize escrow:', error);
@@ -109,7 +109,7 @@ export class EscrowSetupService {
       console.log('Gotten source token account, about to get escrow public key again', sourceTokenAccount);
 
       // Get escrow's token account
-    const escrowAddressPublicKey = publicKey(this.escrowAddress);
+      const escrowAddressPublicKey = publicKey(this.escrowAddress);
 
       const escrowTokenAccount = findAssociatedTokenPda(this.umi, {
         mint: publicKey(EscrowSetupService.CONFIG.TOKEN_MINT),
@@ -152,7 +152,7 @@ export class EscrowSetupService {
   async addDelegates() {
     try {
       console.log('Adding delegates to collection...');
-      
+
       const delegates = [
         publicKey("5jD4WTmGYmJG6e9JjRvJX8Svk5Ph2rxqwPjrqky33rRg"),
         publicKey("2BAnwcKZHzohvMjwZ4ekxN2vmrgLF955d8U1cw1XvHVz")
@@ -163,13 +163,13 @@ export class EscrowSetupService {
         plugin: {
           type: 'UpdateDelegate',
           additionalDelegates: delegates, // Now correctly typed as PublicKey[]
-          authority: { 
-            type: 'Address', 
-            address: publicKey("6Ajc185h256k1fVxuWGJCZjUXbFT8SQ17J3LZLRCLbTr") 
+          authority: {
+            type: 'Address',
+            address: publicKey("6Ajc185h256k1fVxuWGJCZjUXbFT8SQ17J3LZLRCLbTr")
           },
         },
       }).sendAndConfirm(this.umi);
-  
+
       console.log('Successfully added delegates to collection');
     } catch (error) {
       console.error('Failed to add delegates:', error);
@@ -180,12 +180,12 @@ export class EscrowSetupService {
   async verifySetup() {
     try {
       console.log('Verifying escrow setup...');
-      
+
       const escrowData = await fetchEscrowV1(this.umi, this.escrowAddress);
       console.log('Escrow data fetched', escrowData);
-      
+
       // Verify escrow configuration
-      const isValid = 
+      const isValid =
         escrowData.collection.toString() === EscrowSetupService.CONFIG.COLLECTION &&
         escrowData.token.toString() === EscrowSetupService.CONFIG.TOKEN_MINT &&
         escrowData.authority.toString() === EscrowSetupService.CONFIG.AUTHORITY &&
@@ -199,7 +199,7 @@ export class EscrowSetupService {
 
 
       // Check escrow token balance
-    const escrowAddressPublicKey = publicKey(this.escrowAddress);
+      const escrowAddressPublicKey = publicKey(this.escrowAddress);
 
       const escrowTokenAccount = findAssociatedTokenPda(this.umi, {
         mint: publicKey(EscrowSetupService.CONFIG.TOKEN_MINT),
@@ -207,7 +207,7 @@ export class EscrowSetupService {
       });
 
       const tokenBalance = await fetchToken(this.umi, escrowTokenAccount);
-      
+
       console.log('Escrow verification completed:', {
         escrowAddress: this.escrowAddress.toString(),
         tokenBalance: Number(tokenBalance.amount),
