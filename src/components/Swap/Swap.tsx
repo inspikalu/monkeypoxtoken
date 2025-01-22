@@ -1,93 +1,311 @@
 import { useWallet } from "@solana/wallet-adapter-react";
 import React, { useEffect, useState } from "react";
 import {
-  createEscrow,
-  fundEscrow,
   getFungibleTokensForWallet,
   getNonFungibleTokensForWallet,
-  swapNftToFungible,
   truncateAddress,
 } from "./utils";
 import { UserNFTokens, UserFTokens } from "./swap-types";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { ArrowUpDown } from 'lucide-react';
+import createUnifiedEscrow from "./utils/createEscrow";
 import { clusterApiUrl } from "@solana/web3.js";
-import { mplHybrid } from "@metaplex-foundation/mpl-hybrid";
+import { captureV1, MPL_HYBRID_PROGRAM_ID, mplHybrid, releaseV1 } from "@metaplex-foundation/mpl-hybrid";
 import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import { publicKey as convertToPublicKey } from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { publicKey as convertToPublicKey, Pda, PublicKey, signerIdentity, Umi } from "@metaplex-foundation/umi";
+import { fetchEscrowV1 } from "@metaplex-foundation/mpl-hybrid";
+import {
+  base58,
+  publicKey as publicKeySerializer,
+  string,
+} from "@metaplex-foundation/umi/serializers";
+import performSwap, { TradeState } from "./utils/performSwap";
+import fetchUserAssetsv1 from "./utils/fetchUserAssets";
+import searchAssets from "./utils/searchAssets";
+
 
 const Swap = () => {
   const { publicKey, connected } = useWallet();
   const [userFTokens, setUserFTokens] = useState<UserFTokens[]>([]);
   const [userNFTokens, setUserNFTokens] = useState<UserNFTokens[]>([]);
-  const [isNftToToken] = useState(true);
-  // const [tokensPerNft] = useState(10); // Example value, adjust as needed
+  const [isNftToToken, setIsNftToToken] = useState(true);
+  const [selectedNft, setSelectedNft] = useState<UserNFTokens | null>(null);
+  const [selectedToken, setSelectedToken] = useState<UserFTokens | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const wallet = useWallet();
 
-  useEffect(() => {
-    if (publicKey) {
-      getFungibleTokensForWallet(publicKey.toBase58())
-        .then((item) => setUserFTokens(item.specificData))
-        .catch((error) => toast.error(error.message));
+  const fetchUserAssets = async function() {
+    try {
+      if (!publicKey) {
+        throw new Error("Please Connect your wallet")
+      }
+      const response = await Promise.all([
+        getFungibleTokensForWallet(publicKey.toBase58())
+          .then((item) => setUserFTokens(item.specificData))
+          .catch((error) => toast.error(error.message)),
 
-      getNonFungibleTokensForWallet(publicKey.toBase58())
-        .then((item) => setUserNFTokens(item.specificData))
-        .catch((error) => toast.error(error.message));
+        getNonFungibleTokensForWallet(publicKey.toBase58())
+          .then((item) => setUserNFTokens(item.specificData))
+          .catch((error) => toast.error(error.message)),
+      ])
+    } catch (error: any) {
+      toast.error("Error fetching userAssets", error.message)
+    }
+  }
+
+  useEffect(() => {
+    setIsLoading(true)
+    if (publicKey && connected) {
+      fetchUserAssets().finally(() => setIsLoading(false))
     }
   }, [publicKey]);
 
-  const handleSwapNftToToken = async function () {
-    if (!userNFTokens[0].collectionAddress.address) {
-      return;
-    }
-    try {
-      const umi = createUmi(clusterApiUrl("devnet"))
-        .use(mplHybrid())
-        .use(mplTokenMetadata())
-        .use(walletAdapterIdentity(wallet));
+  const handleSwapDirectionToggle = () => {
+    setIsNftToToken(!isNftToToken);
+    setSelectedNft(null);
+    setSelectedToken(null);
+  };
 
-      console.log(umi.identity.publicKey);
-      console.log("Creating escrow");
-      const escrowConfigurationAddress = await createEscrow({
-        wallet: wallet,
-        collectionAddress: userNFTokens[0].collectionAddress.address as string,
-        collectionBaseUrl: "https://hello",
-        escrowName: "Fake Escrow",
-        fTokenAddress: userFTokens[0].mintAddress,
-        rpcEndpoint: clusterApiUrl("devnet"),
-      });
 
-      if (!escrowConfigurationAddress) {
-        throw new Error("No escrow configuration");
+
+  const handleSwap = async () => {
+    const swapUmi = createUmi(clusterApiUrl("devnet"))
+      .use(mplHybrid())
+      .use(mplTokenMetadata())
+      .use(walletAdapterIdentity(wallet));
+
+    const validateEscrow = async function() {
+      const umiWithSigner = swapUmi.use(signerIdentity(swapUmi.identity));
+      try {
+        if (!selectedNft?.collectionAddress.address) {
+          throw new Error("Select a valid collection address");
+        }
+        const escrowAddress = umiWithSigner.eddsa.findPda(MPL_HYBRID_PROGRAM_ID, [
+          string({ size: "variable" }).serialize("escrow"),
+          publicKeySerializer().serialize(selectedNft?.collectionAddress.address),
+        ]);
+
+        try {
+          const escrow = await fetchEscrowV1(swapUmi, convertToPublicKey(escrowAddress));
+          return escrow;
+        } catch (fetchError: any) {
+          // If the error is AccountNotFoundError, this means we need to create the escrow
+          if (fetchError.name === 'AccountNotFoundError') {
+            return null;
+          }
+          // If it's any other error, we should propagate it
+          throw fetchError;
+        }
+      } catch (error: any) {
+        console.error("Escrow validation error:", error);
+        toast.error(error.message);
+        throw error; // Propagate the error to be handled by the parent try-catch
       }
+    };
 
-      fundEscrow({
-        umi,
-        escrowConfigurationAddress: convertToPublicKey(
-          escrowConfigurationAddress[0]
-        ),
-        tokenMint: convertToPublicKey(userFTokens[0].mintAddress),
-      });
-      console.log("Funded Successfully");
+    try {
+      if (isNftToToken) {
+        if (!selectedNft || !publicKey) {
+          throw new Error('Please select an NFT and Connect Wallet');
+        }
+        if (!selectedNft?.collectionAddress?.address) {
+          throw new Error('Selected NFT does not have a valid collection address');
+        }
+        if (!selectedToken?.mintAddress) {
+          throw new Error("Selected Token does not have a valid mint address")
+        }
+        console.log(selectedNft, "NFT", selectedToken, "Token")
+        console.log("________________________________________")
+        console.log(selectedNft?.collectionAddress?.address)
 
-      swapNftToFungible({
-        umi,
-        escrowConfigurationAddress,
-        asset: convertToPublicKey(userNFTokens[0].mintAddress),
-        collection: convertToPublicKey(
-          userNFTokens[0].collectionAddress.address
-        ),
-        feeProjectAccount: umi.identity.publicKey,
-        tokenAccount: convertToPublicKey(userFTokens[0].mintAddress),
-      });
-      console.log(" escrow Created");
-    } catch (error) {
-      console.error(error);
+        let escrowPublickKey
+        const validatedEscrow = await validateEscrow()
+        if (validatedEscrow) { escrowPublickKey = validatedEscrow.publicKey }
+        console.log(validatedEscrow, "Escrow Validated")
+        if (!validatedEscrow) {
+          const createEscrow = await createUnifiedEscrow(
+            swapUmi,
+            swapUmi.identity,
+            {
+              name: `Moonlambo ${publicKey?.toString().slice(0, 8)}`,
+              metadataBaseUrl: "https://base-uri/",
+              minIndex: 0,
+              maxIndex: 15,
+              feeWalletAddress: wallet.publicKey ? wallet.publicKey.toString() : "",
+              tokenSwapCost: 1,
+              tokenSwapFee: 1,
+              solSwapFee: 0.5,
+              reroll: true,
+              collectionAddress: selectedNft?.collectionAddress.address,
+              tokenMintAddress: selectedToken?.mintAddress,
+            },
+          )
+          console.log(createEscrow)
+          escrowPublickKey = createEscrow.escrowAddress
+        }
+        console.log(escrowPublickKey)
+
+        if (!escrowPublickKey) {
+          throw new Error("Error Creating Escrow")
+        }
+        if (!wallet?.publicKey) {
+          throw new Error("Connect Wallet")
+        }
+
+        const swap = await releaseV1(swapUmi, {
+          owner: swapUmi.identity,
+          escrow: convertToPublicKey(escrowPublickKey),
+          asset: convertToPublicKey(selectedNft.mintAddress),
+          collection: convertToPublicKey(selectedNft.collectionAddress.address),
+          feeProjectAccount: convertToPublicKey(wallet.publicKey.toString()),
+          token: convertToPublicKey(selectedToken.mintAddress)
+        }).sendAndConfirm(swapUmi)
+
+        toast.success("Token swapped Successfully")
+
+      } else {
+        if (!selectedNft || !publicKey) {
+          throw new Error('Please select an NFT and Connect Wallet');
+        }
+        if (!selectedNft?.collectionAddress?.address) {
+          throw new Error('Selected NFT does not have a valid collection address');
+        }
+        if (!selectedToken?.mintAddress) {
+          throw new Error("Selected Token does not have a valid mint address")
+        }
+        console.log(selectedNft, "NFT", selectedToken, "Token")
+        console.log("________________________________________")
+        console.log(selectedNft?.collectionAddress?.address)
+
+        let escrowPublickKey
+        const validatedEscrow = await validateEscrow()
+        if (validatedEscrow) { escrowPublickKey = validatedEscrow.publicKey }
+        console.log(validatedEscrow, "Escrow Validated")
+        if (!validatedEscrow) {
+          const createEscrow = await createUnifiedEscrow(
+            swapUmi,
+            swapUmi.identity,
+            {
+              name: `Moonlambo ${publicKey?.toString().slice(0, 8)}`,
+              metadataBaseUrl: "https://base-uri/",
+              minIndex: 0,
+              maxIndex: 15,
+              feeWalletAddress: wallet.publicKey ? wallet.publicKey.toString() : "",
+              tokenSwapCost: 1,
+              tokenSwapFee: 1,
+              solSwapFee: 0.5,
+              reroll: true,
+              collectionAddress: selectedNft?.collectionAddress.address,
+              tokenMintAddress: selectedToken?.mintAddress,
+            },
+          )
+          console.log(createEscrow)
+          escrowPublickKey = createEscrow.escrowAddress
+        }
+        console.log(escrowPublickKey)
+
+        if (!escrowPublickKey) {
+          throw new Error("Error Creating Escrow")
+        }
+        if (!wallet?.publicKey) {
+          throw new Error("Connect Wallet")
+        }
+
+        console.log(
+          await searchAssets(swapUmi, {
+            owner: swapUmi.identity.publicKey.toString(),
+            collection: selectedNft.collectionAddress.address,
+            burnt: false
+          }, selectedNft.collectionAddress.address)
+        )
+
+        console.log("Above swap")
+        const swapit = await captureV1(swapUmi, {
+          owner: swapUmi.identity,
+          escrow: convertToPublicKey(escrowPublickKey),
+          asset: convertToPublicKey(selectedNft.mintAddress),
+          // asset: null,
+          collection: convertToPublicKey(selectedNft.collectionAddress.address as string),
+          feeProjectAccount: convertToPublicKey(wallet.publicKey.toString()),
+          token: convertToPublicKey(selectedToken.mintAddress)
+        }).sendAndConfirm(swapUmi)
+        console.log("IN swap", swapit)
+
+        // Handle Token to NFT swap
+      }
+    } catch (err: any) {
+      console.error(err)
+      toast.error("Escrow is not yet a delegated authority")
+      // toast.error(err.message);
     }
   };
+
+  const SelectNFT = () => (
+    <label className="block w-full">
+      <span className="text-sm text-gray-300 mb-1 block">Choose NFT</span>
+      <select
+        value={selectedNft?.mintAddress || ""}
+        onChange={(e) => {
+          const selected = userNFTokens.find(nft => nft.mintAddress === e.target.value);
+          setSelectedNft(selected || null);
+        }}
+        className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
+      >
+        <option value="">Select an NFT</option>
+        {userNFTokens.map((item, idx) => (
+          <option key={idx} value={item.mintAddress} className="bg-gray-800">
+            {item.name}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+
+  const SelectToken = () => (
+    <label className="block w-full">
+      <span className="text-sm text-gray-300 mb-1 block">Choose Token</span>
+      <select
+        value={selectedToken?.mintAddress || ""}
+        onChange={(e) => {
+          const selected = userFTokens.find(token => token.mintAddress === e.target.value);
+          setSelectedToken(selected || null);
+        }}
+        className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
+      >
+        <option value="">Select a token</option>
+        {userFTokens.map((item, idx) => (
+          <option key={idx} value={item.mintAddress} className="bg-gray-800">
+            {item.name} ({item.symbol})
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+
+  if (!connected) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8">
+          <p>Please connect your wallet to continue</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-8">
+          <p>Loading your tokens...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-900 text-white">
@@ -101,41 +319,53 @@ const Swap = () => {
             <h2 className="text-2xl font-bold text-yellow-400">
               {isNftToToken ? "NFT → Tokens" : "Tokens → NFT"}
             </h2>
-            {/* <p className="text-gray-400">
-              1 $ASTRO = {tokensPerNft.toLocaleString()} $MOONL
-            </p> */}
           </div>
-          {connected && (
-            <div className="text-sm text-gray-400">
-              {truncateAddress(publicKey?.toBase58() || "")}
-            </div>
-          )}
+          <div className="text-sm text-gray-400">
+            {truncateAddress(publicKey?.toBase58() || "")}
+          </div>
         </div>
-        {isNftToToken ? (
-          <div>
-            <div className="grid items-center grid-cols-[1fr_4fr]">
-              {/* <FormField label="Select Amount" /> */}
-            </div>
-            <label>
-              <span>Choose nft</span>
-              <select className="flex flex-col w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white">
-                {userNFTokens.map((item, idx) => {
-                  return (
-                    <option key={idx} className="px-4 py-2 bg-gray-800/50">
-                      {item.name}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
-            <button onClick={handleSwapNftToToken}>Swap</button>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+            {error}
           </div>
-        ) : (
-          <div></div>
         )}
+
+        <div className="space-y-8">
+          <div className="relative">
+            {/* First Select */}
+            <div className="mb-12">
+              {isNftToToken ? <SelectNFT /> : <SelectToken />}
+            </div>
+
+            {/* Switch Button */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[30%] z-10">
+              <button
+                onClick={handleSwapDirectionToggle}
+                className="p-3 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors flex items-center justify-center"
+              >
+                <ArrowUpDown size={20} className="text-yellow-400" />
+              </button>
+            </div>
+
+            {/* Second Select */}
+            <div className="mt-12">
+              {isNftToToken ? <SelectToken /> : <SelectNFT />}
+            </div>
+          </div>
+
+          <button
+            onClick={handleSwap}
+            disabled={!selectedToken || !selectedNft}
+            className="w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
+          >
+            {isNftToToken ? "Swap NFT for Tokens" : "Swap Tokens for NFT"}
+          </button>
+        </div>
       </motion.div>
     </div>
   );
 };
 
 export default Swap;
+
