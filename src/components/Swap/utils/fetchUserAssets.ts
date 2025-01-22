@@ -1,15 +1,15 @@
-import { dasApi } from "@metaplex-foundation/digital-asset-standard-api";
-import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
-import {
-    createUmi,
-} from "@metaplex-foundation/umi-bundle-defaults";
-import { createSignerFromWalletAdapter, walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import { WalletAdapter } from "@solana/wallet-adapter-base";
-import {
-    DasApiAssetList
-} from "@metaplex-foundation/digital-asset-standard-api";
-import { createNoopSigner, publicKey, signerIdentity, Umi } from "@metaplex-foundation/umi";
-import { WalletContextState } from "@solana/wallet-adapter-react";
+// import { dasApi } from "@metaplex-foundation/digital-asset-standard-api";
+// import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+// import {
+//     createUmi,
+// } from "@metaplex-foundation/umi-bundle-defaults";
+// import { createSignerFromWalletAdapter, walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+// import { WalletAdapter } from "@solana/wallet-adapter-base";
+// import {
+//     DasApiAssetList
+// } from "@metaplex-foundation/digital-asset-standard-api";
+// import { dasApi } from "@metaplex-foundation/digital-asset-standard-api";
+// import { PublicKey, Umi } from "@metaplex-foundation/umi";
 
 // const fetchUserAssets = async (wallet: WalletContextState, rpcEndpoint: string) => {
 //     const umi = createUmi(rpcEndpoint)
@@ -68,13 +68,14 @@ import { WalletContextState } from "@solana/wallet-adapter-react";
 //     return assets;
 // };
 
-async function fetchUserAssets(umi: Umi, assetId: PublicKey<string>) {
-    try {
-        const asset = await umi.rpc.getAsset(assetId);
-        console.log(asset);
-    } catch (e) {
-        console.error(e);
-    }
-}
+// async function fetchUserAssets(umi: Umi, assetId: PublicKey) {
+//     umi.use(dasApi())
+//     try {
+//         const asset = await umi.rpc.getAsset(assetId);
+//         console.log(asset);
+//     } catch (e) {
+//         console.error(e);
+//     }
+// }
 
-export default fetchUserAssets;
+// export default fetchUserAssets;

@@ -23,7 +23,7 @@ const searchAssets = async (umi: Umi, searchAssetArgs: SearchAssetArgs, collecti
   let assets: DasApiAssetList | undefined;
 
   while (continueFetch) {
-    //@ts-ignore
+    //@ts-expect-error This is explanation
     const response: DasApiAssetList = await umi.rpc.searchAssets({
       owner: searchAssetArgs.owner,
       grouping: ["collection", searchAssetArgs.collection],

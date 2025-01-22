@@ -1,9 +1,7 @@
 import {
-  DasApiAsset,
   DasApiAssetList
 } from "@metaplex-foundation/digital-asset-standard-api";
 import {
-  captureV1,
   releaseV1
 } from "@metaplex-foundation/mpl-hybrid";
 import {
@@ -13,7 +11,8 @@ import {
   Signer,
   signerIdentity,
   Pda,
-  publicKey
+  publicKey,
+  RpcConfirmTransactionResult
 } from "@metaplex-foundation/umi";
 import {
   setComputeUnitPrice,
@@ -52,11 +51,7 @@ interface TransactionSettings {
 
 interface TransactionResult {
   signature: string[];
-  confirmation: {
-    signature: Uint8Array;
-    blockhash: string;
-    slot: number;
-  };
+  confirmation: RpcConfirmTransactionResult;
 }
 
 interface SearchAssetArgs {
@@ -75,7 +70,7 @@ async function searchAssets(
   let assets: DasApiAssetList | undefined;
 
   while (continueFetch) {
-    // @ts-ignore - RPC method not properly typed in interface
+    // @ts-expect-error - RPC method not properly typed in interface
     const response: DasApiAssetList = await umi.rpc.searchAssets({
       owner: searchAssetArgs.owner,
       grouping: ["collection", searchAssetArgs.collection],

@@ -15,15 +15,12 @@ import { captureV1, MPL_HYBRID_PROGRAM_ID, mplHybrid, releaseV1 } from "@metaple
 import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { publicKey as convertToPublicKey, Pda, PublicKey, signerIdentity, Umi } from "@metaplex-foundation/umi";
+import { publicKey as convertToPublicKey, signerIdentity, } from "@metaplex-foundation/umi";
 import { fetchEscrowV1 } from "@metaplex-foundation/mpl-hybrid";
 import {
-  base58,
   publicKey as publicKeySerializer,
   string,
 } from "@metaplex-foundation/umi/serializers";
-import performSwap, { TradeState } from "./utils/performSwap";
-import fetchUserAssetsv1 from "./utils/fetchUserAssets";
 import searchAssets from "./utils/searchAssets";
 
 
@@ -35,16 +32,16 @@ const Swap = () => {
   const [selectedNft, setSelectedNft] = useState<UserNFTokens | null>(null);
   const [selectedToken, setSelectedToken] = useState<UserFTokens | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   const wallet = useWallet();
 
-  const fetchUserAssets = async function() {
+  const fetchUserAssets = async function () {
     try {
       if (!publicKey) {
         throw new Error("Please Connect your wallet")
       }
-      const response = await Promise.all([
+      await Promise.all([
         getFungibleTokensForWallet(publicKey.toBase58())
           .then((item) => setUserFTokens(item.specificData))
           .catch((error) => toast.error(error.message)),
@@ -79,7 +76,7 @@ const Swap = () => {
       .use(mplTokenMetadata())
       .use(walletAdapterIdentity(wallet));
 
-    const validateEscrow = async function() {
+    const validateEscrow = async function () {
       const umiWithSigner = swapUmi.use(signerIdentity(swapUmi.identity));
       try {
         if (!selectedNft?.collectionAddress.address) {
@@ -157,7 +154,7 @@ const Swap = () => {
           throw new Error("Connect Wallet")
         }
 
-        const swap = await releaseV1(swapUmi, {
+        await releaseV1(swapUmi, {
           owner: swapUmi.identity,
           escrow: convertToPublicKey(escrowPublickKey),
           asset: convertToPublicKey(selectedNft.mintAddress),
