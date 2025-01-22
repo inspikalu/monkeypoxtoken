@@ -36,7 +36,7 @@ const Swap = () => {
 
   const wallet = useWallet();
 
-  const fetchUserAssets = async function () {
+  const fetchUserAssets = async function() {
     try {
       if (!publicKey) {
         throw new Error("Please Connect your wallet")
@@ -76,7 +76,7 @@ const Swap = () => {
       .use(mplTokenMetadata())
       .use(walletAdapterIdentity(wallet));
 
-    const validateEscrow = async function () {
+    const validateEscrow = async function() {
       const umiWithSigner = swapUmi.use(signerIdentity(swapUmi.identity));
       try {
         if (!selectedNft?.collectionAddress.address) {
@@ -253,7 +253,7 @@ const Swap = () => {
         }}
         className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
       >
-        <option value="">Select an NFT</option>
+        <option value="">{userNFTokens.length > 0 ? "Select an NFT" : "You don't have any NFT"}</option>
         {userNFTokens.map((item, idx) => (
           <option key={idx} value={item.mintAddress} className="bg-gray-800">
             {item.name}
@@ -274,8 +274,8 @@ const Swap = () => {
         }}
         className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
       >
-        <option value="">Select a token</option>
-        {userFTokens.map((item, idx) => (
+        <option value="">{userFTokens.length > 0 ? "Select a token" : "You don't have any token"}</option>
+        {userFTokens.length > 0 && userFTokens.map((item, idx) => (
           <option key={idx} value={item.mintAddress} className="bg-gray-800">
             {item.name} ({item.symbol})
           </option>
