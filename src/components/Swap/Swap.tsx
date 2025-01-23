@@ -36,31 +36,40 @@ const Swap = () => {
 
   const wallet = useWallet();
 
-  const fetchUserAssets = async function() {
-    try {
-      if (!publicKey) {
-        throw new Error("Please Connect your wallet")
-      }
-      await Promise.all([
-        getFungibleTokensForWallet(publicKey.toBase58())
-          .then((item) => setUserFTokens(item.specificData))
-          .catch((error) => toast.error(error.message)),
 
-        getNonFungibleTokensForWallet(publicKey.toBase58())
-          .then((item) => setUserNFTokens(item.specificData))
-          .catch((error) => toast.error(error.message)),
-      ])
-    } catch (error: any) {
-      toast.error("Error fetching userAssets", error.message)
-    }
-  }
 
   useEffect(() => {
-    setIsLoading(true)
-    if (publicKey && connected) {
-      fetchUserAssets().finally(() => setIsLoading(false))
+    const fetchUserAssets = async function () {
+      setIsLoading(true)
+
+      try {
+        if (!publicKey) {
+          throw new Error("Please Connect your wallet")
+        }
+        const [fungibleTokens, nonFungibleTokens] = await Promise.all([
+          getFungibleTokensForWallet(publicKey.toBase58()),
+          getNonFungibleTokensForWallet(publicKey.toBase58())
+        ]);
+
+        // Ensure we're setting the data even if specificData is undefined
+        setUserFTokens(fungibleTokens?.specificData || []);
+        setUserNFTokens(nonFungibleTokens?.specificData || []);
+      } catch (error: any) {
+        console.error("Error fetching assets:", error);
+        toast.error("Error fetching userAssets", error.message)
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }, [publicKey]);
+    if (publicKey && connected) {
+      fetchUserAssets()
+    }
+  }, [publicKey, connected]);
+
+  useEffect(() => {
+    console.log("FTokens:", userFTokens);
+    console.log("NFTokens:", userNFTokens);
+  }, [userFTokens, userNFTokens]);
 
   const handleSwapDirectionToggle = () => {
     setIsNftToToken(!isNftToToken);
@@ -76,7 +85,7 @@ const Swap = () => {
       .use(mplTokenMetadata())
       .use(walletAdapterIdentity(wallet));
 
-    const validateEscrow = async function() {
+    const validateEscrow = async function () {
       const umiWithSigner = swapUmi.use(signerIdentity(swapUmi.identity));
       try {
         if (!selectedNft?.collectionAddress.address) {
