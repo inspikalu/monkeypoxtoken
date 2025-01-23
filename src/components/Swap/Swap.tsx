@@ -22,6 +22,7 @@ import {
   string,
 } from "@metaplex-foundation/umi/serializers";
 import searchAssets from "./utils/searchAssets";
+import GridSelector from "./GridSelector";
 
 
 const Swap = () => {
@@ -252,45 +253,57 @@ const Swap = () => {
   };
 
   const SelectNFT = () => (
-    <label className="block w-full">
-      <span className="text-sm text-gray-300 mb-1 block">Choose NFT</span>
-      <select
-        value={selectedNft?.mintAddress || ""}
-        onChange={(e) => {
-          const selected = userNFTokens.find(nft => nft.mintAddress === e.target.value);
-          setSelectedNft(selected || null);
-        }}
-        className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
-      >
-        <option value="">{userNFTokens.length > 0 ? "Select an NFT" : "You don't have any NFT"}</option>
-        {userNFTokens.map((item, idx) => (
-          <option key={idx} value={item.mintAddress} className="bg-gray-800">
-            {item.name}
-          </option>
-        ))}
-      </select>
-    </label>
+    <GridSelector
+      items={userNFTokens}
+      selectedItem={selectedNft}
+      onSelect={setSelectedNft}
+      type="NFT"
+    />
+    // <label className="block w-full">
+    //   <span className="text-sm text-gray-300 mb-1 block">Choose NFT</span>
+    //   <select
+    //     value={selectedNft?.mintAddress || ""}
+    //     onChange={(e) => {
+    //       const selected = userNFTokens.find(nft => nft.mintAddress === e.target.value);
+    //       setSelectedNft(selected || null);
+    //     }}
+    //     className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
+    //   >
+    //     <option value="">{userNFTokens.length > 0 ? "Select an NFT" : "You don't have any NFT"}</option>
+    //     {userNFTokens.map((item, idx) => (
+    //       <option key={idx} value={item.mintAddress} className="bg-gray-800">
+    //         {item.name}
+    //       </option>
+    //     ))}
+    //   </select>
+    // </label>
   );
 
   const SelectToken = () => (
-    <label className="block w-full">
-      <span className="text-sm text-gray-300 mb-1 block">Choose Token</span>
-      <select
-        value={selectedToken?.mintAddress || ""}
-        onChange={(e) => {
-          const selected = userFTokens.find(token => token.mintAddress === e.target.value);
-          setSelectedToken(selected || null);
-        }}
-        className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
-      >
-        <option value="">{userFTokens.length > 0 ? "Select a token" : "You don't have any token"}</option>
-        {userFTokens.length > 0 && userFTokens.map((item, idx) => (
-          <option key={idx} value={item.mintAddress} className="bg-gray-800">
-            {item.name} ({item.symbol})
-          </option>
-        ))}
-      </select>
-    </label>
+    <GridSelector
+      items={userFTokens}
+      selectedItem={selectedToken}
+      onSelect={setSelectedToken}
+      type="Token"
+    />
+    // <label className="block w-full">
+    //   <span className="text-sm text-gray-300 mb-1 block">Choose Token</span>
+    //   <select
+    //     value={selectedToken?.mintAddress || ""}
+    //     onChange={(e) => {
+    //       const selected = userFTokens.find(token => token.mintAddress === e.target.value);
+    //       setSelectedToken(selected || null);
+    //     }}
+    //     className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-yellow-400/50 focus:border-yellow-400/50 text-white"
+    //   >
+    //     <option value="">{userFTokens.length > 0 ? "Select a token" : "You don't have any token"}</option>
+    //     {userFTokens.length > 0 && userFTokens.map((item, idx) => (
+    //       <option key={idx} value={item.mintAddress} className="bg-gray-800">
+    //         {item.name} ({item.symbol})
+    //       </option>
+    //     ))}
+    //   </select>
+    // </label>
   );
 
   if (!connected) {
