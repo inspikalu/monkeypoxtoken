@@ -6,6 +6,7 @@ import { FaRocket, FaBars, FaX, FaArrowsRotate } from "react-icons/fa6";
 import HomePage from "./Hero";
 // import SwapPage2 from "./Swap";
 import SwapPage from "./Swap/Swap";
+// import SwapPage from "./Swap/Swapcomp"
 import Footer from "./Footer";
 import Page from "./Page";
 import LaunchpadPage from "./Launchpad/Launchpad";
@@ -40,7 +41,7 @@ interface MousePosition {
 
 export const NavigationContext = React.createContext<NavigationContextType>({
   currentPage: "home",
-  setCurrentPage: () => {},
+  setCurrentPage: () => { },
 });
 
 const TokenApp: React.FC = () => {
@@ -88,9 +89,8 @@ const TokenApp: React.FC = () => {
   return (
     <NavigationContext.Provider value={{ currentPage, setCurrentPage }}>
       <div
-        className={`min-h-screen bg-gradient-to-br from-gray-900 via-[#111827] to-gray-900 ${
-          isMobileMenuOpen ? "overflow-hidden" : ""
-        }`}
+        className={`min-h-screen bg-gradient-to-br from-gray-900 via-[#111827] to-gray-900 ${isMobileMenuOpen ? "overflow-hidden" : ""
+          }`}
       >
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div
@@ -155,11 +155,10 @@ const TokenApp: React.FC = () => {
                     key={id}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      currentPage === id
-                        ? "bg-yellow-400/20 text-yellow-400"
-                        : "text-gray-300 hover:text-yellow-400"
-                    }`}
+                    className={`px-4 py-2 rounded-lg transition-colors ${currentPage === id
+                      ? "bg-yellow-400/20 text-yellow-400"
+                      : "text-gray-300 hover:text-yellow-400"
+                      }`}
                     onClick={() => setCurrentPage(id)}
                   >
                     {label}
@@ -203,11 +202,10 @@ const TokenApp: React.FC = () => {
                         key={id}
                         whileHover={{ x: 10 }}
                         whileTap={{ scale: 0.95 }}
-                        className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg mb-2 ${
-                          currentPage === id
-                            ? "bg-yellow-400/20 text-yellow-400"
-                            : "text-gray-300 hover:text-yellow-400"
-                        }`}
+                        className={`w-full flex items-center space-x-4 px-4 py-3 rounded-lg mb-2 ${currentPage === id
+                          ? "bg-yellow-400/20 text-yellow-400"
+                          : "text-gray-300 hover:text-yellow-400"
+                          }`}
                         onClick={() => {
                           setCurrentPage(id);
                           setIsMobileMenuOpen(false);
