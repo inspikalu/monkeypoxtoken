@@ -17,6 +17,7 @@ import { fetchAllDigitalAssetWithTokenByOwner, mplTokenMetadata, } from "@metapl
 import { fetchAssetsByOwner } from "@metaplex-foundation/mpl-core";
 import { string, base58, publicKey as publicKeySerializer, } from "@metaplex-foundation/umi/serializers";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import axios from "axios";
 
 // Function that adds zeros to a number, needed for adding the correct amount of decimals
 function addZeros(num: number, numZeros: number): number {
@@ -280,24 +281,35 @@ export async function getFungibleTokensForWallet(
       umi,
       ownerPublicKey
     );
-    const nfts: UserFTokens[] = [];
-    allNFTs.forEach((nft) => {
-      nfts.push({
-        mintAddress: nft.publicKey,
-        name: nft.metadata.name,
-        symbol: nft.metadata.symbol,
-        uri: nft.metadata.uri,
-      });
-    });
+    // const nfts: UserFTokens[] = [];
+    // allNFTs.forEach((nft) => {
+    //   nfts.push({
+    //     mintAddress: nft.publicKey,
+    //     name: nft.metadata.name,
+    //     symbol: nft.metadata.symbol,
+    //     uri: nft.metadata.uri,
+    //   });
+    // });
 
-    const returnData = {
-      specificData: nfts,
-      fullData: allNFTs,
-    };
-    console.log("fts fetched successfully", returnData);
-    return returnData;
+    // const returnData = {
+    //   specificData: nfts,
+    //   fullData: allNFTs,
+    // };
+    // console.log("fts fetched successfully", returnData);
+    return allNFTs;
   } catch (error) {
     console.error("Error swapping tokens to NFT:", error);
     throw new Error("Failed to swap tokens to NFT");
+  }
+}
+
+
+export const getTokenMetadataImage = async function (url: string) {
+  try {
+    const response = await axios.get(url)
+    console.log(response?.data?.image)
+    return response?.data?.image as string
+  } catch (error) {
+    console.error(error)
   }
 }
