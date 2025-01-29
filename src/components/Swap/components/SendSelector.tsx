@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { clusterApiUrl } from '@solana/web3.js';
 import { useWallet } from "@solana/wallet-adapter-react";
-import fetchAssetByCollection from "../utils/fetchAssetByCollection";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplHybrid } from "@metaplex-foundation/mpl-hybrid";
-import { DigitalAssetWithToken, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
-import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import { DigitalAssetWithToken } from "@metaplex-foundation/mpl-token-metadata";
 import { AssetV1 } from "@metaplex-foundation/mpl-core";
 import { getFungibleTokensForWallet, getNonFungibleTokensForWallet } from "../utils"
 import { publicKey } from "@metaplex-foundation/umi";

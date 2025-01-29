@@ -6,8 +6,6 @@ import {
   SwapNftToTokensParams,
   SwapTokensToNFTsParams,
   UpdateEscrowConfigParams,
-  UserNFTokens,
-  UserFTokens,
   CreateEscrowParams,
 } from "./swap-types";
 import { clusterApiUrl } from "@solana/web3.js";

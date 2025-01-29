@@ -1,6 +1,5 @@
-import { Pda, PublicKey, publicKey, sol } from '@metaplex-foundation/umi';
+import { Pda, PublicKey, publicKey } from '@metaplex-foundation/umi';
 import { fetchEscrowV1, updateEscrowV1 } from '@metaplex-foundation/mpl-hybrid';
-import { SolAmount } from '@metaplex-foundation/umi';
 
 /**
  * Utility function to update the escrow configuration.

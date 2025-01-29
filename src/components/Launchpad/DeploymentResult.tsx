@@ -56,7 +56,7 @@ const DeploymentResult: React.FC<LaunchPadInterface.DeploymentResultProps> = ({
               >
                 Or view on solscan
               </a>
-              <p>When swapping your token don't forget to transfer the token to the Escrow </p>
+              <p>When swapping your token don&apos;t forget to transfer the token to the Escrow </p>
             </div>
           </div>
         )}
