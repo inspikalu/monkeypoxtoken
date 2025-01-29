@@ -246,22 +246,7 @@ export async function getNonFungibleTokensForWallet(
     const ownerPublicKey = publicKey(walletAddress);
     console.log("Fetching nfts....");
     const allNFTs = await fetchAssetsByOwner(umi, ownerPublicKey);
-    const nfts: UserNFTokens[] = [];
-    allNFTs.forEach((nft) => {
-      nfts.push({
-        mintAddress: nft.publicKey,
-        name: nft.name,
-        uri: nft.uri,
-        collectionAddress: nft.updateAuthority,
-      });
-    });
-
-    const returnData = {
-      specificData: nfts,
-      fullData: allNFTs,
-    };
-    console.log("nfts fetched successfully", returnData);
-    return returnData;
+    return allNFTs;
   } catch (error) {
     console.error("Error swapping tokens to NFT:", error);
     throw new Error("Failed to swap tokens to NFT");
