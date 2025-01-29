@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { clusterApiUrl } from '@solana/web3.js';
 import { useWallet } from "@solana/wallet-adapter-react";
-import fetchAssetByCollection from "../utils/fetchAssetByCollection";
-import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { mplHybrid } from "@metaplex-foundation/mpl-hybrid";
-import { DigitalAssetWithToken, mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
-import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import { DigitalAssetWithToken } from "@metaplex-foundation/mpl-token-metadata";
 import { AssetV1 } from "@metaplex-foundation/mpl-core";
-import { getFungibleTokensForWallet } from "../utils"
+import { getFungibleTokensForWallet, getNonFungibleTokensForWallet } from "../utils"
+import { publicKey } from "@metaplex-foundation/umi";
 
 interface SendSelectorProps {
     onNext: () => void;
@@ -34,10 +30,6 @@ const SendSelector: React.FC<SendSelectorProps> = ({
     setSelectedToken
 }) => {
     const wallet = useWallet();
-    const swapUmi = createUmi(clusterApiUrl("devnet"))
-        .use(mplHybrid())
-        .use(mplTokenMetadata())
-        .use(walletAdapterIdentity(wallet));
     const [userNFTAssets, setUserNFTAssets] = useState<AssetV1[] | undefined>(undefined)
     const [userTokens, setUserTokens] = useState<DigitalAssetWithToken[] | undefined>(undefined)
     const [isLoadingAssets, setIsloadingAssets] = useState(false)
@@ -50,12 +42,13 @@ const SendSelector: React.FC<SendSelectorProps> = ({
             if (!isNftToToken && !tokenMintAddress) {
                 throw new Error("Please input your token mint address");
             }
+            if (!wallet.publicKey) throw new Error("Please Connect your wallet")
 
             console.log("Getting Assets....");
             if (isNftToToken && collectionAddress) {
-                const response = await fetchAssetByCollection({ umi: swapUmi, collectionAddress });
-                setUserNFTAssets(response)
-                console.log(response)
+                const allAssetsInWallet = await getNonFungibleTokensForWallet(publicKey(wallet.publicKey))
+                const filteredAssets = allAssetsInWallet.filter(asset => asset.updateAuthority.address === collectionAddress);
+                setUserNFTAssets(filteredAssets)
             } else {
                 if (!wallet.publicKey) throw new Error("Wallet public key is null");
                 const response = await getFungibleTokensForWallet(wallet.publicKey.toString());
@@ -74,15 +67,17 @@ const SendSelector: React.FC<SendSelectorProps> = ({
     }, [collectionAddress, tokenMintAddress, isNftToToken]);
 
     const handleNextOrConfirm = () => {
-        // You can add additional validation here if needed
-        if (!selectedNft) {
-            // Maybe show an error message that no NFT is selected
+        if (isNftToToken && !selectedNft) {
+            // Show error message that no NFT is selected
+            return;
+        }
+        if (!isNftToToken && !selectedToken) {
+            // Show error message that no token is selected
             return;
         }
         onNext();
     };
 
-    console.log(selectedNft !== null)
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-900 text-white">
             <motion.div
@@ -105,7 +100,7 @@ const SendSelector: React.FC<SendSelectorProps> = ({
                             </p>
                         ) : isNftToToken ? (
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                {userNFTAssets?.map((item, index) => {
+                                {(userNFTAssets && userNFTAssets?.length > 0) ? (<div>{userNFTAssets?.map((item, index) => {
                                     return (
                                         <div
                                             className={`w-full aspect-[9/10] rounded-md p-2 border cursor-pointer ${item.publicKey === selectedNft?.publicKey
@@ -121,35 +116,37 @@ const SendSelector: React.FC<SendSelectorProps> = ({
                                             <div className="text-center">{item.name}</div>
                                         </div>
                                     );
-                                })}
+                                })}</div>) : (<div className="col-span-3">No asset found</div>)}
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {userTokens?.map((token, index) => (
-                                    <div
-                                        key={`${token.mint.publicKey}${index}`}
-                                        className={`w-full p-3 rounded-lg cursor-pointer ${token.mint.publicKey === selectedToken?.mint.publicKey
-                                            ? "bg-yellow-400/20 border-yellow-400"
-                                            : "bg-gray-600/50 border-transparent"
-                                            } border hover:bg-gray-500/50 transition-colors`}
-                                        onClick={() => setSelectedToken && setSelectedToken(userTokens[index])}
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center">
-                                                    <span className="text-sm font-bold">{token.metadata?.symbol?.[0] || "T"}</span>
+                                {(userTokens && userTokens?.length > 0) ? <div>
+                                    {userTokens?.map((token, index) => (
+                                        <div
+                                            key={`${token.mint.publicKey}${index}`}
+                                            className={`w-full p-3 rounded-lg cursor-pointer ${token.mint.publicKey === selectedToken?.mint.publicKey
+                                                ? "bg-yellow-400/20 border-yellow-400"
+                                                : "bg-gray-600/50 border-transparent"
+                                                } border hover:bg-gray-500/50 transition-colors`}
+                                            onClick={() => setSelectedToken && setSelectedToken(userTokens[index])}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center">
+                                                        <span className="text-sm font-bold">{token.metadata?.symbol?.[0] || "T"}</span>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium">{token.metadata.name || "Unknown Token"}</p>
+                                                        <p className="text-sm text-gray-400">{token.metadata.symbol || "TOKEN"}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium">{token.metadata.name || "Unknown Token"}</p>
-                                                    <p className="text-sm text-gray-400">{token.metadata.symbol || "TOKEN"}</p>
-                                                </div>
+                                                <p className="text-sm text-gray-300">
+                                                    {token.token.amount} {token.metadata?.symbol || "TOK"}
+                                                </p>
                                             </div>
-                                            <p className="text-sm text-gray-300">
-                                                {token.token.amount} {token.metadata?.symbol || "TOK"}
-                                            </p>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div> : <div>No Token Found</div>}
                             </div>
                         )}
                     </div>
@@ -167,7 +164,7 @@ const SendSelector: React.FC<SendSelectorProps> = ({
                         <button
                             onClick={handleNextOrConfirm}
                             disabled={isNftToToken ? !selectedNft : !selectedToken}
-                            className={`w-full px-4 py-2 rounded-lg font-medium transition-colors ${selectedNft
+                            className={`w-full px-4 py-2 rounded-lg font-medium transition-colors ${(isNftToToken ? selectedNft : selectedToken)
                                 ? "bg-yellow-500 hover:bg-yellow-600"
                                 : "bg-yellow-500/50 cursor-not-allowed"
                                 }`}

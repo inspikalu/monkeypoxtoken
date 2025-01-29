@@ -1,7 +1,6 @@
 import { PublicKey, Umi } from '@metaplex-foundation/umi';
 import { findAssociatedTokenPda } from '@metaplex-foundation/mpl-toolbox';
 import { transferTokens, createTokenIfMissing } from '@metaplex-foundation/mpl-toolbox';
-import { createAccount } from '@metaplex-foundation/mpl-toolbox';
 
 /**
  * Parameters for funding an escrow account
