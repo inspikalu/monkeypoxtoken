@@ -37,17 +37,14 @@ const Launchpad: React.FC = () => {
     setIsLoading: (value: React.SetStateAction<boolean>) => void
   ): Promise<void> => {
     try {
-      // createToken function already includes setIsLoading internally
       const { data } = await createToken(formData, setIsLoading);
 
-      // Connect to SSE with the clientId returned from createToken
-      // connect(clientId);
 
       if (data.success) {
         setDeploymentResult(data);
         formRef.current?.resetForm();
         toast.success("Token Created Successfully", {
-          position: "top-right",
+          style: SonnerStyle,
         });
       } else {
         throw new Error(data.message);

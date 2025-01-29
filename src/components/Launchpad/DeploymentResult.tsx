@@ -3,6 +3,13 @@ import { toast } from "sonner";
 import { SonnerStyle } from "../utils/consts";
 import { FaCopy } from "react-icons/fa6";
 
+export const copyToClipboard = (text: string): void => {
+  navigator.clipboard.writeText(text);
+  toast.success("Copied to clipboard!", {
+    style: SonnerStyle,
+  });
+};
+
 const isTokenResponse = (
   result:
     | LaunchPadInterface.TokenDeploymentResponse
@@ -15,12 +22,7 @@ const DeploymentResult: React.FC<LaunchPadInterface.DeploymentResultProps> = ({
   result,
   onClose,
 }) => {
-  const copyToClipboard = (text: string): void => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!", {
-      style: SonnerStyle,
-    });
-  };
+
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center p-4">
@@ -54,6 +56,7 @@ const DeploymentResult: React.FC<LaunchPadInterface.DeploymentResultProps> = ({
               >
                 Or view on solscan
               </a>
+              <p>When swapping your token don't forget to transfer the token to the Escrow </p>
             </div>
           </div>
         )}

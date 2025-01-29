@@ -35,10 +35,6 @@ const SendSelector: React.FC<SendSelectorProps> = ({
     setSelectedToken
 }) => {
     const wallet = useWallet();
-    const swapUmi = createUmi(clusterApiUrl("devnet"))
-        .use(mplHybrid())
-        .use(mplTokenMetadata())
-        .use(walletAdapterIdentity(wallet));
     const [userNFTAssets, setUserNFTAssets] = useState<AssetV1[] | undefined>(undefined)
     const [userTokens, setUserTokens] = useState<DigitalAssetWithToken[] | undefined>(undefined)
     const [isLoadingAssets, setIsloadingAssets] = useState(false)
