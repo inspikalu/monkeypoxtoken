@@ -16,8 +16,7 @@ import { signerIdentity } from '@metaplex-foundation/umi';
 import { string, publicKey as publicKeySerializer } from '@metaplex-foundation/umi/serializers';
 import { publicKey as convertToPublicKey } from '@metaplex-foundation/umi';
 import { toast } from 'sonner';
-import { Copy } from 'lucide-react';
-import { truncateAddress } from './utils';
+import fundEscrow from '../utils/fund-escrow';
 
 // Define the step type
 interface Step {
@@ -35,7 +34,6 @@ const Swap: React.FC = () => {
     const [escrowAddress, setEscrowAddress] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedEscrowAsset, setSelectedEscrowAsset] = useState<AssetV1 | null>(null);
-    const [showEscrowConfirmation, setShowEscrowConfirmation] = useState<boolean>(false);
 
     const wallet = useWallet();
 
@@ -79,11 +77,11 @@ const Swap: React.FC = () => {
     const copyToClipboard = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
-            toast.success("Address copied to clipboard!");
         } catch (err: any) {
-            toast.error(`Failed to copy address ${err.message}`);
+            console.log(err.message)
         }
     };
+    copyToClipboard("Thank you for using our platform")
 
     const validateAndGetEscrow = async (): Promise<string> => {
         if (!wallet.publicKey) {
@@ -164,11 +162,6 @@ const Swap: React.FC = () => {
             return;
         }
 
-        // Show escrow confirmation dialog for NFT to Token swaps
-        if (isNftToToken) {
-            setShowEscrowConfirmation(true);
-            return;
-        }
 
         // Proceed with token to NFT swap
         await processSwap();
@@ -183,6 +176,20 @@ const Swap: React.FC = () => {
                 if (!selectedNft) {
                     throw new Error("No NFT selected");
                 }
+                if (!tokenMintAddress) {
+                    throw new Error("No token mint address provided");
+                }
+                if (!escrowAddress) {
+                    throw new Error("No escrow address provided");
+                }
+
+                const balance = await swapUmi.rpc.getBalance(swapUmi.identity.publicKey);
+                console.log('SOL balance:', balance);
+                await fundEscrow({
+                    umi: swapUmi,
+                    escrowConfigurationAdd: escrowAddress?.toString(),
+                    tokenMintPublicKey: tokenMintAddress,
+                })
 
                 await releaseV1(swapUmi, {
                     owner: swapUmi.identity,
@@ -216,7 +223,6 @@ const Swap: React.FC = () => {
             toast.error(error.message || "Swap failed");
         } finally {
             setIsLoading(false);
-            setShowEscrowConfirmation(false);
         }
     };
 
@@ -286,57 +292,6 @@ const Swap: React.FC = () => {
                 </div>
             )}
 
-            {/* Custom Escrow Confirmation Dialog */}
-            {showEscrowConfirmation && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-30">
-                    <div className="bg-gray-800 rounded-lg max-w-md w-full p-6 space-y-4">
-                        <div className="flex justify-between items-start">
-                            <h2 className="text-xl font-bold">Confirm Escrow Address</h2>
-                            <button
-                                onClick={() => setShowEscrowConfirmation(false)}
-                                className="text-gray-400 hover:text-white"
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        {/* Warning Message */}
-                        <div className="bg-yellow-900 border border-yellow-700 rounded-lg p-4 text-yellow-100">
-                            <p className="font-semibold">Important!</p>
-                            <p className="mt-1 text-sm">
-                                Please ensure the escrow account is funded with the appropriate tokens before proceeding with the swap.
-                            </p>
-                        </div>
-
-                        {/* Escrow Address */}
-                        <div className="flex items-center justify-between p-4 bg-gray-900 rounded-lg">
-                            <code className="text-sm font-mono text-gray-300">{truncateAddress(escrowAddress!)}</code>
-                            <button
-                                onClick={() => copyToClipboard(escrowAddress!)}
-                                className="p-2 hover:bg-gray-700 rounded-full"
-                            >
-                                <Copy className="h-4 w-4" />
-                            </button>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex justify-end space-x-3 pt-4">
-                            <button
-                                onClick={() => setShowEscrowConfirmation(false)}
-                                className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white bg-gray-700 hover:bg-gray-600 rounded-lg"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={processSwap}
-                                className="px-4 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-lg"
-                            >
-                                Confirm and Proceed
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {renderStep()}
         </section>
