@@ -312,7 +312,10 @@ const TokenForm = forwardRef<
       {deploymentResult && (
         <DeploymentResult
           result={deploymentResult}
-          onClose={() => setDeploymentResult(null)}
+          onClose={() => {
+            setDeploymentResult(null);
+            setFormData(initialFormState);
+          }}
         />
       )}
     </>

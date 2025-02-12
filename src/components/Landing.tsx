@@ -4,9 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaRocket, FaBars, FaX, FaArrowsRotate } from "react-icons/fa6";
 import HomePage from "./Hero";
-// import SwapPage2 from "./Swap";
 import SwapPage from "./Swap/Swap";
-// import SwapPage from "./Swap/Swapcomp"
 import Footer from "./Footer";
 import Page from "./Page";
 import LaunchpadPage from "./Launchpad/Launchpad";
@@ -17,15 +15,6 @@ interface NavItem {
   label: string;
   icon: React.ComponentType;
 }
-
-// type PageId =
-//   | "home"
-//   | "nfts"
-//   | "swap"
-//   | "swap2"
-//   | "lock"
-//   | "roadmap"
-//   | "launchpad";
 
 type PageId = "home" | "swap" | "launchpad";
 
@@ -80,9 +69,6 @@ const TokenApp: React.FC = () => {
   const navItems: NavItem[] = [
     { id: "home", label: "Home", icon: FaRocket },
     { id: "swap", label: "Swap", icon: FaArrowsRotate },
-    // { id: "swap2", label: "Swap2", icon: FaArrowsRotate },
-    // { id: "lock", label: "Lock", icon: FaLock },
-    // { id: "roadmap", label: "Roadmap", icon: FaRoad },
     { id: "launchpad", label: "Launchpad", icon: FaRocket },
   ];
 
@@ -232,12 +218,6 @@ const TokenApp: React.FC = () => {
                 <Footer />
               </Page>
             )}
-            {/* {currentPage === "swap2" && (
-              <Page key="swap2">
-                <SwapPage2 />
-                <Footer />
-              </Page>
-            )} */}
             {currentPage === "launchpad" && (
               <Page key="launchpad">
                 <LaunchpadPage />

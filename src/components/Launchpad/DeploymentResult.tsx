@@ -2,6 +2,7 @@ import * as LaunchPadInterface from "../utils/launchpad-types";
 import { toast } from "sonner";
 import { SonnerStyle } from "../utils/consts";
 import { FaCopy } from "react-icons/fa6";
+import { truncateAddress } from "../Swap/utils";
 
 export const copyToClipboard = (text: string): void => {
   navigator.clipboard.writeText(text);
@@ -35,10 +36,7 @@ const DeploymentResult: React.FC<LaunchPadInterface.DeploymentResultProps> = ({
             <div className="bg-gray-900/50 rounded-lg p-4 flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">Token Address</p>
-                <p className="text-white font-mono">{`${result.mint.slice(
-                  0,
-                  9
-                )}........${result.mint.slice(-9)}`}</p>
+                <p className="text-white font-mono">{`${truncateAddress(result.mint, 15)}`}</p>
               </div>
               <button
                 onClick={() => copyToClipboard(result.mint)}
@@ -56,7 +54,7 @@ const DeploymentResult: React.FC<LaunchPadInterface.DeploymentResultProps> = ({
               >
                 Or view on solscan
               </a>
-              <p>When swapping your token don&apos;t forget to transfer the token to the Escrow </p>
+              <p className="text-lg font-bold border-t border-t-yellow-50 p-2 mt-2">When swapping your token ensure that the escrow(system) has both assets(Fungible and Non Fungible)</p>
             </div>
           </div>
         )}
