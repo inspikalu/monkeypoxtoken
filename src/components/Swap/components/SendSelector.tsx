@@ -5,6 +5,7 @@ import { DigitalAssetWithToken } from "@metaplex-foundation/mpl-token-metadata";
 import { AssetV1 } from "@metaplex-foundation/mpl-core";
 import { getFungibleTokensForWallet, getNonFungibleTokensForWallet } from "../utils"
 import { publicKey } from "@metaplex-foundation/umi";
+import { toast } from "sonner";
 
 interface SendSelectorProps {
     onNext: () => void;
@@ -68,11 +69,11 @@ const SendSelector: React.FC<SendSelectorProps> = ({
 
     const handleNextOrConfirm = () => {
         if (isNftToToken && !selectedNft) {
-            // Show error message that no NFT is selected
+            toast.error("Please select an NFT to swap")
             return;
         }
         if (!isNftToToken && !selectedToken) {
-            // Show error message that no token is selected
+            toast.error("Please select a token to swap")
             return;
         }
         onNext();
@@ -116,7 +117,7 @@ const SendSelector: React.FC<SendSelectorProps> = ({
                                             <div className="text-center">{item.name}</div>
                                         </div>
                                     );
-                                })}</div>) : (<div className="col-span-3">No asset found</div>)}
+                                })}</div>) : (<div className="col-span-3 text-center">No asset found</div>)}
                             </div>
                         ) : (
                             <div className="space-y-3">

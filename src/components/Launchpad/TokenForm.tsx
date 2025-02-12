@@ -7,7 +7,7 @@ import {
   createV1,
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
-import { mintTokensTo, createToken } from "@metaplex-foundation/mpl-toolbox";
+import { mintTokensTo, createAssociatedToken, findAssociatedTokenPda } from "@metaplex-foundation/mpl-toolbox";
 import {
   generateSigner,
   percentAmount,
@@ -75,11 +75,13 @@ const TokenForm = forwardRef<
       const mint = generateSigner(umi);
 
       // Calculate initial supply with decimals
-      const initialAmount =
-        formData.initialSupply * Math.pow(10, formData.decimals);
+      const initialAmount = formData.initialSupply * Math.pow(10, formData.decimals);
 
-      // First create the token account
-      const tokenAccount = generateSigner(umi);
+      // Find the associated token account PDA for the user's wallet
+      const associatedTokenAccount = findAssociatedTokenPda(umi, {
+        mint: mint.publicKey,
+        owner: publicKey(walletPublicKey.toString()),
+      });
 
       let builder = createV1(umi, {
         mint,
@@ -91,20 +93,19 @@ const TokenForm = forwardRef<
         tokenStandard: TokenStandard.Fungible,
       });
 
-      // Create token account before minting
+      // Create ATA and mint tokens to it
       if (initialAmount > 0) {
         builder = builder
           .add(
-            createToken(umi, {
+            createAssociatedToken(umi, {
               mint: mint.publicKey,
               owner: publicKey(walletPublicKey.toString()),
-              token: tokenAccount,
             })
           )
           .add(
             mintTokensTo(umi, {
               mint: mint.publicKey,
-              token: tokenAccount.publicKey,
+              token: associatedTokenAccount,
               amount: BigInt(initialAmount),
               mintAuthority: umi.identity,
             })
@@ -133,6 +134,78 @@ const TokenForm = forwardRef<
     } finally {
       setIsLoading(false);
     }
+
+    // try {
+    //   setIsLoading(true);
+
+    //   // Create UMI instance
+    //   const umi = createUmi(formData.rpcEndpoint).use(mplToolbox());
+
+    //   // Add wallet adapter identity
+    //   umi.use(walletAdapterIdentity(wallet.adapter));
+
+    //   // Create new token mint
+    //   const mint = generateSigner(umi);
+
+    //   // Calculate initial supply with decimals
+    //   const initialAmount =
+    //     formData.initialSupply * Math.pow(10, formData.decimals);
+
+    //   // First create the token account
+    //   const tokenAccount = generateSigner(umi);
+
+    //   let builder = createV1(umi, {
+    //     mint,
+    //     name: formData.name,
+    //     symbol: formData.symbol,
+    //     uri: formData.uri,
+    //     sellerFeeBasisPoints: percentAmount(0),
+    //     decimals: formData.decimals,
+    //     tokenStandard: TokenStandard.Fungible,
+    //   });
+
+    //   // Create token account before minting
+    //   if (initialAmount > 0) {
+    //     builder = builder
+    //       .add(
+    //         createToken(umi, {
+    //           mint: mint.publicKey,
+    //           owner: publicKey(walletPublicKey.toString()),
+    //           token: tokenAccount,
+    //         })
+    //       )
+    //       .add(
+    //         mintTokensTo(umi, {
+    //           mint: mint.publicKey,
+    //           token: tokenAccount.publicKey,
+    //           amount: BigInt(initialAmount),
+    //           mintAuthority: umi.identity,
+    //         })
+    //       );
+    //   }
+
+    //   // Send transaction
+    //   const result = await builder.sendAndConfirm(umi, {
+    //     confirm: { commitment: "finalized" },
+    //   });
+
+    //   // Set deployment result
+    //   const deploymentResult: LaunchPadInterface.TokenDeploymentResponse = {
+    //     success: true,
+    //     mint: mint.publicKey,
+    //     transaction: result.signature.toString(),
+    //     network: formData.rpcEndpoint as clusterUrl,
+    //     message: "Token Created Successfully",
+    //   };
+
+    //   setDeploymentResult(deploymentResult);
+    //   toast.success("Token deployed successfully!");
+    // } catch (error: any) {
+    //   console.error("Token deployment failed:", error);
+    //   toast.error(`Deployment failed: ${error.message}`);
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   const handleSelectNetwork = (e: React.ChangeEvent<HTMLSelectElement>) => {

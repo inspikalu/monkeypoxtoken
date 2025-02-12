@@ -2,12 +2,7 @@ import { forwardRef, useState, useImperativeHandle } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import {
-  mplCore,
-  create,
-  fetchCollection,
-  ruleSet,
-} from "@metaplex-foundation/mpl-core";
+import { mplCore, create, fetchCollection, ruleSet } from "@metaplex-foundation/mpl-core";
 import { generateSigner, publicKey } from "@metaplex-foundation/umi";
 import { toast } from "sonner";
 import FormField from "./FormField";
@@ -19,7 +14,7 @@ import DeploymentResult from "./DeploymentResult";
 const NFTForm = forwardRef<
   { resetForm: () => void },
   LaunchPadInterface.NFTFormProps
->(({}, ref) => {
+>(({ }, ref) => {
   const { publicKey: walletPublicKey, wallet } = useWallet();
   const [deploymentResult, setDeploymentResult] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
