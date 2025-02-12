@@ -74,15 +74,6 @@ const Swap: React.FC = () => {
         }
     };
 
-    const copyToClipboard = async (text: string) => {
-        try {
-            await navigator.clipboard.writeText(text);
-        } catch (err: any) {
-            console.log(err.message)
-        }
-    };
-    copyToClipboard("Thank you for using our platform")
-
     const validateAndGetEscrow = async (): Promise<string> => {
         if (!wallet.publicKey) {
             throw new Error("Wallet not connected");
