@@ -1,13 +1,13 @@
-import TokenApp from "@/components/Landing";
-import { Toaster } from "sonner";
+import { HeroSection, PlatformOverview, CreatorFocused, EducationCTA } from "@/components/Hero";
+
 
 export default function Home() {
   return (
     <>
-      <Toaster />
-      <div>
-        <TokenApp />
-      </div>
+      <HeroSection />
+      <PlatformOverview />
+      <CreatorFocused />
+      <EducationCTA />
     </>
   );
 }
