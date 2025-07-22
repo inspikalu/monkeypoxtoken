@@ -36,7 +36,7 @@ const Footer = () => (
         <h4 className="text-yellow-400 text-lg font-bold mb-4">Community</h4>
         <div className="flex space-x-4">
           <motion.a
-            href="#"
+            href="https://x.com/moonlamboe"
             whileHover={{ scale: 1.1 }}
             className="text-gray-400 hover:text-yellow-400 transition-colors"
           >
