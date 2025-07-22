@@ -3,6 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { SolanaProviders } from './providers'
 import { Toaster } from 'react-hot-toast';
+import NavBar from "@/components/NavBar";
+import React from "react";
+import motion from "framer-motion"
+import Background from "@/components/Background";
+import Footer from "@/components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,11 +33,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-blue-950`}
       >
         <SolanaProviders>
-        <Toaster position="top-right" />
+          <Toaster position="top-right" />
+          <NavBar />
+          <div className="mt-[4rem]"></div>
+          <Background />
           {children}
+          <Footer />
         </SolanaProviders>
       </body>
     </html>
